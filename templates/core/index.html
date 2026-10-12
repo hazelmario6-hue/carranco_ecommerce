@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="container hero-grid">
+                <div class="hero-copy">
+                    <p class="eyebrow"><span class="short-line"></span> DE SAN LUIS POTOSÍ A TU MESA</p>
+                    <h1 id="hero-title">Sabor tradicional<br>hecho a mano<br><em>desde 1885</em></h1>
+                    <p class="hero-description">Hay sabores que nos reúnen. Descubre la tradición quesera de Carranco y encuentra un favorito para cada momento en la mesa.</p>
+                    <a class="button button-gold" href="#destacados">Descubre más</a>
+                    <div class="hero-signature"><span>1885</span><p>Un origen potosino.<br>Una tradición que se comparte.</p></div>
+                </div>
+                <figure class="hero-visual">
+                    <img data-photo="hero" src="https://images.unsplash.com/photo-1695606452858-39038806b143?auto=format&amp;fit=crop&amp;w=1400&amp;q=85" width="1000" height="1100" fetchpriority="high" alt="Tabla de quesos y acompañamientos para compartir" decoding="async">
+                    <figcaption class="photo-caption">EL SABOR DE ESTAR JUNTOS <small>Fotografía ilustrativa</small></figcaption>
+                    <div class="heritage-seal" aria-hidden="true"><small>TRADICIÓN</small><span>1885</span><small>CARRANCO</small></div>
+                </figure>
+            </div>
+        </section>
+
+        <div class="benefits-band">
+            <div class="container benefits-grid">
+                <div><i class="fa-solid fa-wheat-awn" aria-hidden="true"></i><p><strong>Tradición artesanal</strong><span>Sabores con raíces potosinas</span></p></div>
+                <div><i class="fa-solid fa-basket-shopping" aria-hidden="true"></i><p><strong>A tu manera</strong><span>Explora y arma tu selección</span></p></div>
+                <div><i class="fa-solid fa-heart" aria-hidden="true"></i><p><strong>Para compartir</strong><span>Del desayuno a la sobremesa</span></p></div>
+            </div>
+        </div>
+
+        <section class="section container" id="destacados" aria-labelledby="featured-title">
+            <div class="section-heading">
+                <div><p class="eyebrow">LOS FAVORITOS DE LA MESA</p><h2 id="featured-title">Un queso para cada antojo</h2></div>
+                <a class="text-link" href="{% url 'catalogo:productos' %}">Consultar catálogo</a>
+            </div>
+            
+            <div class="filter-status" id="filter-status" hidden><p></p><button class="text-link" type="button" data-reset-filter>Mostrar todos</button></div>
+            <div class="product-grid" id="featured-products">{% for producto in destacados %}{% include "catalogo/tarjeta.html" %}{% endfor %}</div>
+            <noscript><p class="notice">Puedes consultar los productos y utilizar el carrito con los formularios de esta página.</p></noscript>
+        </section>
+
+        <section class="section section-cream" aria-labelledby="categories-title">
+            <div class="container">
+                <div class="section-heading"><div><p class="eyebrow">ENCUENTRA TU SABOR</p><h2 id="categories-title">De todos los días. Para cada ocasión.</h2></div></div>
+                <div class="category-grid">
+                    <a class="category-card" href="{% url 'catalogo:productos' %}?categoria=frescos" data-category="frescos"><span class="category-number">01</span><i class="fa-solid fa-cheese" aria-hidden="true"></i><h3>Quesos frescos</h3><p>Ranchero, panela y cottage</p><span class="category-action">Explorar categoría</span></a>
+                    <a class="category-card" href="{% url 'catalogo:productos' %}?categoria=fundir" data-category="fundir"><span class="category-number">02</span><i class="fa-solid fa-fire-burner" aria-hidden="true"></i><h3>Para fundir</h3><p>Oaxaca, asadero y Chihuahua</p><span class="category-action">Explorar categoría</span></a>
+                    <a class="category-card" href="{% url 'catalogo:productos' %}?categoria=madurados" data-category="madurados"><span class="category-number">03</span><i class="fa-solid fa-utensils" aria-hidden="true"></i><h3>Quesos madurados</h3><p>Una selección para tu tabla</p><span class="category-action">Ver próxima selección</span></a>
+                    <a class="category-card" href="{% url 'catalogo:productos' %}?categoria=mantequilla" data-category="mantequilla"><span class="category-number">04</span><i class="fa-solid fa-bread-slice" aria-hidden="true"></i><h3>Mantequilla</h3><p>Un toque especial en tu cocina</p><span class="category-action">Ver próxima selección</span></a>
+                </div>
+            </div>
+        </section>
+
+        <section class="section container" id="ofertas" aria-labelledby="offer-title">
+            <div class="offer-panel">
+                <figure class="offer-photo"><img data-photo="offer" src="https://images.unsplash.com/photo-1695606392694-93de9b0bf320?auto=format&amp;fit=crop&amp;w=1000&amp;q=85" width="850" height="850" loading="lazy" alt="Quesos sobre una tabla listos para llevar a la mesa"><figcaption>Fotografía ilustrativa del conjunto</figcaption></figure>
+                <div class="offer-copy"><p class="eyebrow">PARA COMPARTIR</p><h2 id="offer-title">La tradición<br>sabe mejor de a dos.</h2><p>Un dúo para tus recetas favoritas: Queso Ranchero de 400 g y Queso Panela de 400 g.</p><div class="offer-price"><strong>${{ duo.precio_catalogo|floatformat:2 }} <small>MXN</small></strong><span>Una selección para compartir</span></div>{% if duo %}<form method="post" action="{% url 'carrito:actualizar' %}" class="cart-add-form">{% csrf_token %}<input type="hidden" name="producto" value="{{ duo.pk }}"><input type="hidden" name="cantidad" value="1"><input type="hidden" name="operacion" value="add"><button class="button button-gold" type="submit"{% if not duo.stock_disponible %} disabled{% endif %}>Agregar el dúo al carrito</button></form>{% else %}<p>El conjunto no está disponible.</p>{% endif %}</div>
+            </div>
+        </section>
+
+        <section class="section section-cream" id="tradicion" aria-labelledby="story-title">
+            <div class="container story-grid">
+                <figure class="story-photo"><img data-photo="story" src="https://images.unsplash.com/photo-1665105519765-a0ec8e027100?auto=format&amp;fit=crop&amp;w=1000&amp;q=85" width="900" height="1050" loading="lazy" alt="Paisaje rural que evoca el origen de la tradición quesera"><figcaption>Imagen ilustrativa; no muestra instalaciones de Carranco.</figcaption></figure>
+                <div class="story-copy"><p class="eyebrow">NUESTRAS RAÍCES</p><h2 id="story-title">Potosino de origen.<br>Tradicional de corazón.</h2><p>La historia de Carranco comienza en San Luis Potosí. Desde 1885, la elaboración de quesos y mantequilla forma parte de una tradición que ha acompañado a generaciones.</p><p>El Queso Ranchero, incorporado en 1958 y reconocido por su moldeado a mano, es una de las expresiones de esa identidad.</p><div class="story-milestones"><div><strong>1885</strong><span>Inicia la elaboración</span></div><div><strong>1958</strong><span>Nace el Queso Ranchero</span></div><div><strong>Hoy</strong><span>Una tradición compartida</span></div></div><a class="button button-outline" href="{% url 'core:nosotros' %}">Conoce nuestra historia</a><small class="source-note">Referencia histórica: <a href="https://quesoscarranco.com.mx/historia/" target="_blank" rel="noopener noreferrer">sitio oficial de Carranco</a>.</small></div>
+            </div>
+        </section>
+
+        <section class="section container" aria-labelledby="testimonials-title">
+            <div class="section-heading"><div><p class="eyebrow">MOMENTOS QUE SE COMPARTEN</p><h2 id="testimonials-title">En la mesa siempre hay una historia</h2></div></div>
+            <p class="demo-note">Relatos ilustrativos para acompañar ideas de consumo.</p>
+            <div class="testimonial-grid">
+                <figure class="testimonial"><span class="quote-mark" aria-hidden="true">“</span><blockquote>El ranchero le da ese toque que recuerdo de los desayunos en casa. Lo acompañaría con tortillas recién hechas.</blockquote><figcaption><span class="avatar" aria-hidden="true">ML</span><div><strong>Mariana L.</strong><small>Relato ilustrativo</small></div></figcaption></figure>
+                <figure class="testimonial"><span class="quote-mark" aria-hidden="true">“</span><blockquote>Para una tarde de quesadillas, elegiría Oaxaca. Es de esos sabores que invitan a quedarse un rato más en la mesa.</blockquote><figcaption><span class="avatar" aria-hidden="true">RC</span><div><strong>Ricardo C.</strong><small>Relato ilustrativo</small></div></figcaption></figure>
+                <figure class="testimonial"><span class="quote-mark" aria-hidden="true">“</span><blockquote>Me gusta imaginar una tabla sencilla: queso, fruta y buena compañía. No hace falta mucho para compartir algo especial.</blockquote><figcaption><span class="avatar" aria-hidden="true">AG</span><div><strong>Ana G.</strong><small>Relato ilustrativo</small></div></figcaption></figure>
+            </div>
+        </section>
+
+        <section class="catalog-cta" id="contacto" aria-labelledby="cta-title">
+            <div class="container cta-grid"><div><p class="eyebrow">LLEVA LA TRADICIÓN A TU MESA</p><h2 id="cta-title">Tu próximo favorito<br>te está esperando.</h2><p>Explora nuestra selección o conoce el asistente.</p></div><div class="cta-actions"><a class="button button-gold" href="{% url 'catalogo:productos' %}">Consultar catálogo</a><button class="button button-light-outline" type="button" data-whatsapp><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Hablar con el asistente</button><p>Horario de atención:<br>L–V 9:00–18:00 · Sáb 9:00–14:00</p></div></div>
+        </section>
+    {% endblock %}

@@ -1,0 +1,2 @@
+:root { --primary:#0D1B2A; --secondary:#0D1B2A; --accent:#C9A24B; --header-bg:#0D1B2A; --header-color:#F2E6CF; --header-branding-color:#C9A24B; --link-fg:#74591D; --body-bg:#FBF7EF; --button-bg:#0D1B2A; --button-hover-bg:#23364B; --selected-row:#F2E6CF; }
+#footer { padding:24px; font-size:12px; text-align:center; }

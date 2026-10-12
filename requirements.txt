@@ -1,0 +1,6 @@
+Django==5.2.18
+mysqlclient==2.3.0
+Pillow==12.3.0
+python-dotenv==1.2.4
+requests==2.34.2
+simplejson==3.20.2

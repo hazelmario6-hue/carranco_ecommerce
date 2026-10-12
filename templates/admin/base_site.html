@@ -1,0 +1,6 @@
+{% extends "admin/base.html" %}
+{% load static %}
+{% block title %}{{ title }} | Quesos Carranco{% endblock %}
+{% block branding %}<h1 id="site-name"><a href="{% url 'dashboard:inicio' %}">Quesos Carranco</a></h1>{% endblock %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/admin-django.css' %}"><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="{% static 'css/footer.css' %}">{% endblock %}
+{% block footer %}<footer id="footer">{% include "base.html" with footer_only=True only %}</footer>{% endblock %}

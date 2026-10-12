@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}Crea tu cuenta | Carranco{% endblock %}
+{% block content %}<section class="container commerce-section"><p class="eyebrow">QUESOS CARRANCO</p><h1 class="commerce-title">Crea tu cuenta</h1><div class="form-card narrow"><p>Crea tu cuenta para gestionar tus pedidos y direcciones.</p><form method="post">{% csrf_token %}{% include "includes/form.html" %}<button class="button button-navy" type="submit">Crear cuenta</button></form><p class="form-footnote"><a class="text-link" href="{% url 'cuentas:login' %}">Ya tengo cuenta</a></p></div></section>{% endblock %}

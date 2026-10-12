@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}Contacto | Carranco{% endblock %}
+{% block content %}<section class="container commerce-section"><p class="eyebrow">QUESOS CARRANCO</p><h1 class="commerce-title">Contacto</h1><div class="commerce-grid"><div><h2>Hablemos de tu selección.</h2><p>Déjanos un mensaje con tus dudas o el número de pedido. El equipo podrá consultarlo desde el panel de atención.</p><p>Horario de atención: L–V 9:00–18:00 · Sáb 9:00–14:00.</p><button class="button button-outline" type="button" data-whatsapp>Asistente Carranco</button></div><div class="form-card"><form method="post">{% csrf_token %}{% include "includes/form.html" %}<button class="button button-navy" type="submit">Guardar mensaje</button></form></div></div></section>{% endblock %}

@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Nuestra historia | Carranco{% endblock %}
+{% block content %}<section class="section section-cream" id="tradicion" aria-labelledby="story-title">
+            <div class="container story-grid">
+                <figure class="story-photo"><img data-photo="story" src="https://images.unsplash.com/photo-1665105519765-a0ec8e027100?auto=format&amp;fit=crop&amp;w=1000&amp;q=85" width="900" height="1050" loading="lazy" alt="Paisaje rural que evoca el origen de la tradición quesera"><figcaption>Imagen ilustrativa; no muestra instalaciones de Carranco.</figcaption></figure>
+                <div class="story-copy"><p class="eyebrow">NUESTRAS RAÍCES</p><h2 id="story-title">Potosino de origen.<br>Tradicional de corazón.</h2><p>La historia de Carranco comienza en San Luis Potosí. Desde 1885, la elaboración de quesos y mantequilla forma parte de una tradición que ha acompañado a generaciones.</p><p>El Queso Ranchero, incorporado en 1958 y reconocido por su moldeado a mano, es una de las expresiones de esa identidad.</p><div class="story-milestones"><div><strong>1885</strong><span>Inicia la elaboración</span></div><div><strong>1958</strong><span>Nace el Queso Ranchero</span></div><div><strong>Hoy</strong><span>Una tradición compartida</span></div></div><a class="button button-outline" href="{% url 'core:nosotros' %}">Conoce nuestra historia</a><small class="source-note">Referencia histórica: <a href="https://quesoscarranco.com.mx/historia/" target="_blank" rel="noopener noreferrer">sitio oficial de Carranco</a>.</small></div>
+            </div>
+        </section>{% endblock %}

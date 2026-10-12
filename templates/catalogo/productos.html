@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Nuestros productos | Carranco{% endblock %}
+{% block body_class %}catalog-page{% endblock %}
+{% block scripts %}<script src="{% static 'js/productos.js' %}" defer></script>{% endblock %}
+{% block content %}
+        <section class="internal-hero" aria-labelledby="catalog-title">
+            <div class="container">
+                <p class="eyebrow">SABORES CON TRADICIÓN</p>
+                <h1 id="catalog-title">Nuestros productos</h1>
+                <p>Encuentra el queso Carranco ideal para cada ocasión.</p>
+            </div>
+        </section>
+        <section class="container catalog-section" aria-label="Catálogo de productos">
+            <div class="catalog-toolbar">
+                <form id="catalog-search-form" role="search" method="get" action="{% url 'catalogo:productos' %}">
+                    <label class="search-label" for="product-search">Buscar en el catálogo</label>
+                    <div class="search-field">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                        <input id="product-search" name="q" value="{{ query }}" type="search" placeholder="Buscar productos..." autocomplete="off" aria-controls="catalog-products" aria-describedby="search-help">
+                    </div>
+                    <p class="demo-note" id="search-help">Busca por nombre, categoría o descripción.</p>
+                </form>
+                <div class="filter-chips" role="group" aria-label="Filtrar por categoría"><button class="filter-chip" type="button" data-filter="todos" aria-pressed="{% if categoria_actual == 'todos' %}true{% else %}false{% endif %}">Todos</button>{% for categoria in categorias %}<button class="filter-chip" type="button" data-filter="{{ categoria.slug }}" aria-pressed="{% if categoria_actual == categoria.slug %}true{% else %}false{% endif %}">{{ categoria.nombre }}</button>{% endfor %}</div><noscript><label for="category-select">Categoría</label><select form="catalog-search-form" name="categoria" id="category-select"><option value="todos">Todos</option>{% for categoria in categorias %}<option value="{{ categoria.slug }}"{% if categoria_actual == categoria.slug %} selected{% endif %}>{{ categoria.nombre }}</option>{% endfor %}</select><button class="button button-navy" type="submit" form="catalog-search-form">Buscar</button></noscript>
+                <div class="catalog-meta">
+                    <p class="catalog-count" id="catalog-count" role="status" aria-live="polite" aria-atomic="true">{{ coincidencias|length }} productos</p>
+                    
+                </div>
+            </div>
+            <p class="catalog-note">Las fotografías muestran envases del fabricante y pueden corresponder a otros gramajes. Consulta la etiqueta para conocer la presentación real.</p>
+            <div class="product-grid" id="catalog-products">{% for producto in productos %}{% include "catalogo/tarjeta.html" %}{% endfor %}</div>
+            <div class="empty-state catalog-empty" id="catalog-empty"{% if coincidencias %} hidden{% endif %}>
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <h2>No encontramos productos con esos criterios.</h2>
+                <p>Prueba otra búsqueda o explora de nuevo el catálogo.</p>
+                <a class="button button-navy" href="{% url 'catalogo:productos' %}" id="reset-catalog">Ver todos los productos</a>
+            </div>
+            
+        </section>
+    {% endblock %}
