@@ -16,7 +16,7 @@ if len(SECRET_KEY)<32:
 ALLOWED_HOSTS=names("ALLOWED_HOSTS","localhost,127.0.0.1")
 CSRF_TRUSTED_ORIGINS=names("CSRF_TRUSTED_ORIGINS")
 INSTALLED_APPS=["django.contrib.admin","django.contrib.auth","django.contrib.contenttypes","django.contrib.sessions","django.contrib.messages","django.contrib.staticfiles"]+[f"apps.{name}" for name in ["core","catalogo","carrito","cuentas","pedidos","pagos","dashboard"]]
-MIDDLEWARE=["django.middleware.security.SecurityMiddleware","django.contrib.sessions.middleware.SessionMiddleware","django.middleware.common.CommonMiddleware","django.middleware.csrf.CsrfViewMiddleware","django.contrib.auth.middleware.AuthenticationMiddleware","django.contrib.messages.middleware.MessageMiddleware","django.middleware.clickjacking.XFrameOptionsMiddleware","apps.core.middleware.SensitivePagesMiddleware"]
+MIDDLEWARE = ["django.middleware.security.SecurityMiddleware","whitenoise.middleware.WhiteNoiseMiddleware","django.contrib.sessions.middleware.SessionMiddleware","django.middleware.common.CommonMiddleware","django.middleware.csrf.CsrfViewMiddleware","django.contrib.auth.middleware.AuthenticationMiddleware","django.contrib.messages.middleware.MessageMiddleware","django.middleware.clickjacking.XFrameOptionsMiddleware","apps.core.middleware.SensitivePagesMiddleware",]
 ROOT_URLCONF="config.urls"
 TEMPLATES=[{"BACKEND":"django.template.backends.django.DjangoTemplates","DIRS":[BASE_DIR/"templates"],"APP_DIRS":True,"OPTIONS":{"context_processors":["django.template.context_processors.request","django.contrib.auth.context_processors.auth","django.contrib.messages.context_processors.messages","apps.carrito.context_processors.cart_context"]}}]
 WSGI_APPLICATION="config.wsgi.application"
