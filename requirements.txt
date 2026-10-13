@@ -4,3 +4,5 @@ Pillow==12.3.0
 python-dotenv==1.2.4
 requests==2.34.2
 simplejson==3.20.2
+gunicorn==26.2.0
+whitenoise==6.12.0
