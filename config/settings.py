@@ -86,3 +86,20 @@ if PAYMENTS_LIVE and not ACADEMIC_MODE:
 
 if PAYMENTS_LIVE and DEBUG:
     raise ImproperlyConfigured("Para cobros reales configura DEBUG=False y HTTPS.")
+    
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+    },
+}
