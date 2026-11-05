@@ -1,0 +1,402 @@
+[
+{
+  "model": "catalogo.categoria",
+  "pk": 1,
+  "fields": {
+    "nombre": "Quesos frescos",
+    "slug": "frescos"
+  }
+},
+{
+  "model": "catalogo.categoria",
+  "pk": 2,
+  "fields": {
+    "nombre": "Para fundir",
+    "slug": "fundir"
+  }
+},
+{
+  "model": "catalogo.categoria",
+  "pk": 3,
+  "fields": {
+    "nombre": "Madurados",
+    "slug": "madurados"
+  }
+},
+{
+  "model": "catalogo.categoria",
+  "pk": 4,
+  "fields": {
+    "nombre": "Mantequilla",
+    "slug": "mantequilla"
+  }
+},
+{
+  "model": "catalogo.categoria",
+  "pk": 5,
+  "fields": {
+    "nombre": "Ofertas",
+    "slug": "ofertas"
+  }
+},
+{
+  "model": "catalogo.producto",
+  "pk": 1,
+  "fields": {
+    "created_at": "2026-10-12T02:36:40.736Z",
+    "updated_at": "2026-10-12T02:36:40.736Z",
+    "sku": "CARR-RANCHERO",
+    "nombre": "Queso Ranchero",
+    "slug": "queso-ranchero",
+    "legacy_id": "ranchero",
+    "categoria": 1,
+    "descripcion": "Un queso de sabor tradicional y textura firme, ideal para acompañar comidas, preparar antojitos y compartir en familia.",
+    "presentacion": "400 g",
+    "precio_catalogo": "95.00",
+    "precio_academico": "2.00",
+    "stock": 20,
+    "stock_reservado": 0,
+    "imagen": "",
+    "imagen_url": "https://quesoscarranco.com.mx/wp-content/uploads/2024/10/ranchero-300-600x600.png",
+    "galeria": [
+      {
+        "alt": "Envase de Queso Ranchero; fotografía del fabricante o imagen ilustrativa del conjunto",
+        "src": "https://quesoscarranco.com.mx/wp-content/uploads/2024/10/ranchero-300-600x600.png",
+        "caption": "La fotografía puede mostrar un gramaje distinto. La presentación seleccionada pertenece al prototipo académico."
+      },
+      {
+        "alt": "Guacamole servido con cubos de queso Ranchero y un envase Carranco",
+        "src": "https://quesoscarranco.com.mx/wp-content/uploads/2024/10/Q-Ranchero-Original-300g_Guacamole-con-ensalada-de-cubos-ranchero-1024x683-600x600.jpg",
+        "caption": "Fotografía del fabricante como idea para servir. Los envases fotografiados pueden tener otros gramajes."
+      }
+    ],
+    "etiqueta": "Tradición",
+    "activo": true,
+    "destacado": true,
+    "en_catalogo": true,
+    "uso_recomendado": "Sírvelo en cubos sobre guacamole o ensaladas, acompáñalo con tortillas o úsalo para dar un toque de queso a tus antojitos favoritos.",
+    "conservacion": "Mantén el producto refrigerado, conserva su envase cerrado y evita dejarlo fuera de refrigeración durante periodos prolongados. Sigue la temperatura, la fecha de consumo y las instrucciones de conservación indicadas en su etiqueta.",
+    "fuente": "https://quesoscarranco.com.mx/productos/queso-ranchero/"
+  }
+},
+{
+  "model": "catalogo.producto",
+  "pk": 2,
+  "fields": {
+    "created_at": "2026-10-12T02:36:40.738Z",
+    "updated_at": "2026-10-12T02:36:40.738Z",
+    "sku": "CARR-PANELA",
+    "nombre": "Queso Panela",
+    "slug": "queso-panela",
+    "legacy_id": "panela",
+    "categoria": 1,
+    "descripcion": "De sabor suave y textura firme. Una opción fresca para ensaladas, sándwiches o una comida sencilla preparada en casa.",
+    "presentacion": "400 g",
+    "precio_catalogo": "85.00",
+    "precio_academico": "2.00",
+    "stock": 15,
+    "stock_reservado": 0,
+    "imagen": "",
+    "imagen_url": "https://quesoscarranco.com.mx/wp-content/uploads/2024/11/CARRANCO_QUESO_PANELA_400G-1-1024x969-600x600.jpg",
+    "galeria": [
+      {
+        "alt": "Envase de Queso Panela; fotografía del fabricante o imagen ilustrativa del conjunto",
+        "src": "https://quesoscarranco.com.mx/wp-content/uploads/2024/11/CARRANCO_QUESO_PANELA_400G-1-1024x969-600x600.jpg",
+        "caption": "La fotografía puede mostrar un gramaje distinto. La presentación seleccionada pertenece al prototipo académico."
+      },
+      {
+        "alt": "Queso Panela Carranco acompañado de cubos de queso sazonados",
+        "src": "https://quesoscarranco.com.mx/wp-content/uploads/2024/11/Q-Panela-400g_Foto-producto-1024x683-600x600.jpg",
+        "caption": "Fotografía del fabricante como idea para servir. Los envases fotografiados pueden tener otros gramajes."
+      }
+    ],
+    "etiqueta": "Fresco",
+    "activo": true,
+    "destacado": true,
+    "en_catalogo": true,
+    "uso_recomendado": "Córtalo en rebanadas para un sándwich, combínalo con verduras o sírvelo en cubos junto a jitomate y hierbas.",
+    "conservacion": "Mantén el producto refrigerado, conserva su envase cerrado y evita dejarlo fuera de refrigeración durante periodos prolongados. Sigue la temperatura, la fecha de consumo y las instrucciones de conservación indicadas en su etiqueta.",
+    "fuente": "https://quesoscarranco.com.mx/productos/queso-panela/"
+  }
+},
+{
+  "model": "catalogo.producto",
+  "pk": 3,
+  "fields": {
+    "created_at": "2026-10-12T02:36:40.741Z",
+    "updated_at": "2026-10-12T02:36:40.741Z",
+    "sku": "CARR-OAXACA",
+    "nombre": "Queso Oaxaca",
+    "slug": "queso-oaxaca",
+    "legacy_id": "oaxaca",
+    "categoria": 2,
+    "descripcion": "Un queso que se disfruta en hebras y al fundirse. Su sabor acompaña quesadillas, tortas y platillos calientes para compartir.",
+    "presentacion": "400 g",
+    "precio_catalogo": "125.00",
+    "precio_academico": "2.00",
+    "stock": 18,
+    "stock_reservado": 0,
+    "imagen": "",
+    "imagen_url": "https://quesoscarranco.com.mx/wp-content/uploads/2024/11/CARRANCO_QUESO_OAXACA_400G-1024x899-600x600.jpg",
+    "galeria": [
+      {
+        "alt": "Envase de Queso Oaxaca; fotografía del fabricante o imagen ilustrativa del conjunto",
+        "src": "https://quesoscarranco.com.mx/wp-content/uploads/2024/11/CARRANCO_QUESO_OAXACA_400G-1024x899-600x600.jpg",
+        "caption": "La fotografía puede mostrar un gramaje distinto. La presentación seleccionada pertenece al prototipo académico."
+      },
+      {
+        "alt": "Envase alternativo de Queso Oaxaca Carranco de 1.2 kg",
+        "src": "https://quesoscarranco.com.mx/wp-content/uploads/2024/12/RENDER-OAXACA-12-big-600x600.png",
+        "caption": "Otro envase del fabricante. Su gramaje difiere de la presentación simulada de 400 g."
+      }
+    ],
+    "etiqueta": "Para fundir",
+    "activo": true,
+    "destacado": true,
+    "en_catalogo": true,
+    "uso_recomendado": "Deshébralo para preparar quesadillas, añadirlo a una torta o gratinar verduras. Sírvelo recién fundido.",
+    "conservacion": "Mantén el producto refrigerado, conserva su envase cerrado y evita dejarlo fuera de refrigeración durante periodos prolongados. Sigue la temperatura, la fecha de consumo y las instrucciones de conservación indicadas en su etiqueta.",
+    "fuente": "https://quesoscarranco.com.mx/productos/queso-oaxaca/"
+  }
+},
+{
+  "model": "catalogo.producto",
+  "pk": 4,
+  "fields": {
+    "created_at": "2026-10-12T02:36:40.743Z",
+    "updated_at": "2026-10-12T02:36:40.744Z",
+    "sku": "CARR-MANCHEGO",
+    "nombre": "Queso Manchego",
+    "slug": "queso-manchego",
+    "legacy_id": "manchego",
+    "categoria": 2,
+    "descripcion": "De sabor suave y agradable para combinar con pan, verduras o fruta. Una opción para fundir y dar un toque especial a tus recetas.",
+    "presentacion": "400 g",
+    "precio_catalogo": "140.00",
+    "precio_academico": "2.00",
+    "stock": 12,
+    "stock_reservado": 0,
+    "imagen": "",
+    "imagen_url": "https://quesoscarranco.com.mx/wp-content/uploads/2024/11/CARRANCO_QUESO_MANCHEGO_400G-1024x969-600x600.jpg",
+    "galeria": [
+      {
+        "alt": "Envase de Queso Manchego; fotografía del fabricante o imagen ilustrativa del conjunto",
+        "src": "https://quesoscarranco.com.mx/wp-content/uploads/2024/11/CARRANCO_QUESO_MANCHEGO_400G-1024x969-600x600.jpg",
+        "caption": "La fotografía puede mostrar un gramaje distinto. La presentación seleccionada pertenece al prototipo académico."
+      },
+      {
+        "alt": "Molletes con queso Manchego y un envase Carranco",
+        "src": "https://quesoscarranco.com.mx/wp-content/uploads/2024/11/Q-Manchego-200g_Molletes-1024x683-600x600.jpg",
+        "caption": "Fotografía del fabricante como idea para servir. Los envases fotografiados pueden tener otros gramajes."
+      }
+    ],
+    "etiqueta": "Versátil",
+    "activo": true,
+    "destacado": true,
+    "en_catalogo": true,
+    "uso_recomendado": "Úsalo para gratinar molletes, preparar sándwiches calientes o acompañar una tabla de quesos con fruta y pan.",
+    "conservacion": "Mantén el producto refrigerado, conserva su envase cerrado y evita dejarlo fuera de refrigeración durante periodos prolongados. Sigue la temperatura, la fecha de consumo y las instrucciones de conservación indicadas en su etiqueta.",
+    "fuente": "https://quesoscarranco.com.mx/productos/queso-manchego/"
+  }
+},
+{
+  "model": "catalogo.producto",
+  "pk": 5,
+  "fields": {
+    "created_at": "2026-10-12T02:36:40.746Z",
+    "updated_at": "2026-10-12T02:36:40.746Z",
+    "sku": "CARR-CHIHUAHUA",
+    "nombre": "Queso Chihuahua",
+    "slug": "queso-chihuahua",
+    "legacy_id": "chihuahua",
+    "categoria": 2,
+    "descripcion": "Una elección para recetas calientes y momentos de cocina en familia. Su sabor combina con tortillas, pan y verduras.",
+    "presentacion": "400 g",
+    "precio_catalogo": "120.00",
+    "precio_academico": "2.00",
+    "stock": 8,
+    "stock_reservado": 0,
+    "imagen": "",
+    "imagen_url": "https://quesoscarranco.com.mx/wp-content/uploads/2024/11/CARRANCO_QUESO_CHIHUAHUA_400G-1024x1024-600x600.jpg",
+    "galeria": [
+      {
+        "alt": "Envase de Queso Chihuahua; fotografía del fabricante o imagen ilustrativa del conjunto",
+        "src": "https://quesoscarranco.com.mx/wp-content/uploads/2024/11/CARRANCO_QUESO_CHIHUAHUA_400G-1024x1024-600x600.jpg",
+        "caption": "La fotografía puede mostrar un gramaje distinto. La presentación seleccionada pertenece al prototipo académico."
+      },
+      {
+        "alt": "Tabla de quesos ilustrativa con pan y acompañamientos",
+        "src": "https://images.unsplash.com/photo-1695606452858-39038806b143?auto=format&fit=crop&w=1200&q=85",
+        "caption": "Imagen ilustrativa de Unsplash. No representa el producto Chihuahua Carranco."
+      }
+    ],
+    "etiqueta": "Para fundir",
+    "activo": true,
+    "destacado": false,
+    "en_catalogo": true,
+    "uso_recomendado": "Agrégalo a quesadillas o a preparaciones gratinadas. Combínalo con champiñones, rajas o verduras salteadas.",
+    "conservacion": "Mantén el producto refrigerado, conserva su envase cerrado y evita dejarlo fuera de refrigeración durante periodos prolongados. Sigue la temperatura, la fecha de consumo y las instrucciones de conservación indicadas en su etiqueta.",
+    "fuente": "https://quesoscarranco.com.mx/productos/queso-chihuahua/"
+  }
+},
+{
+  "model": "catalogo.producto",
+  "pk": 6,
+  "fields": {
+    "created_at": "2026-10-12T02:36:40.748Z",
+    "updated_at": "2026-10-12T02:36:40.748Z",
+    "sku": "CARR-COTTAGE",
+    "nombre": "Queso Cottage",
+    "slug": "queso-cottage",
+    "legacy_id": "cottage",
+    "categoria": 1,
+    "descripcion": "Un queso de textura granulada y sabor suave, para combinar con alimentos dulces o salados en desayunos y colaciones.",
+    "presentacion": "400 g",
+    "precio_catalogo": "90.00",
+    "precio_academico": "2.00",
+    "stock": 5,
+    "stock_reservado": 0,
+    "imagen": "",
+    "imagen_url": "https://quesoscarranco.com.mx/wp-content/uploads/2024/11/CARRANCO_QUESO_COTTAGE_350g-1-1024x1024-600x600.jpg",
+    "galeria": [
+      {
+        "alt": "Envase de Queso Cottage; fotografía del fabricante o imagen ilustrativa del conjunto",
+        "src": "https://quesoscarranco.com.mx/wp-content/uploads/2024/11/CARRANCO_QUESO_COTTAGE_350g-1-1024x1024-600x600.jpg",
+        "caption": "La fotografía puede mostrar un gramaje distinto. La presentación seleccionada pertenece al prototipo académico."
+      },
+      {
+        "alt": "Helado de cheesecake con zarzamora junto a un envase de Cottage Carranco",
+        "src": "https://quesoscarranco.com.mx/wp-content/uploads/2024/11/Q-Cottage-350g_Helado-de-cheesecake-con-zarzamora-1024x680-600x600.jpg",
+        "caption": "Fotografía del fabricante como idea para servir. Los envases fotografiados pueden tener otros gramajes."
+      }
+    ],
+    "etiqueta": "Fresco",
+    "activo": true,
+    "destacado": false,
+    "en_catalogo": true,
+    "uso_recomendado": "Sírvelo con fruta, úsalo sobre pan tostado o combínalo con verduras. También puede incorporarse a recetas de postres.",
+    "conservacion": "Mantén el producto refrigerado, conserva su envase cerrado y evita dejarlo fuera de refrigeración durante periodos prolongados. Sigue la temperatura, la fecha de consumo y las instrucciones de conservación indicadas en su etiqueta.",
+    "fuente": "https://quesoscarranco.com.mx/productos/queso-cottage/"
+  }
+},
+{
+  "model": "catalogo.producto",
+  "pk": 7,
+  "fields": {
+    "created_at": "2026-10-12T02:36:40.749Z",
+    "updated_at": "2026-10-12T02:36:40.749Z",
+    "sku": "CARR-ASADERO",
+    "nombre": "Queso Asadero",
+    "slug": "queso-asadero",
+    "legacy_id": "asadero",
+    "categoria": 2,
+    "descripcion": "Un queso de sabor suave para fundir y acompañar antojitos. Una opción para servir caliente y compartir al centro de la mesa.",
+    "presentacion": "400 g",
+    "precio_catalogo": "115.00",
+    "precio_academico": "2.00",
+    "stock": 10,
+    "stock_reservado": 0,
+    "imagen": "",
+    "imagen_url": "https://quesoscarranco.com.mx/wp-content/uploads/2024/11/CARRANCO_QUESO_ASADERO_400G-1024x1024-600x600.jpg",
+    "galeria": [
+      {
+        "alt": "Envase de Queso Asadero; fotografía del fabricante o imagen ilustrativa del conjunto",
+        "src": "https://quesoscarranco.com.mx/wp-content/uploads/2024/11/CARRANCO_QUESO_ASADERO_400G-1024x1024-600x600.jpg",
+        "caption": "La fotografía puede mostrar un gramaje distinto. La presentación seleccionada pertenece al prototipo académico."
+      },
+      {
+        "alt": "Quesadillas de birria con un envase de Queso Asadero Carranco",
+        "src": "https://quesoscarranco.com.mx/wp-content/uploads/2024/11/Q-Asadero-400g_Quesadillas-de-birria-1024x679-600x600.jpg",
+        "caption": "Fotografía del fabricante como idea para servir. Los envases fotografiados pueden tener otros gramajes."
+      }
+    ],
+    "etiqueta": "Para fundir",
+    "activo": true,
+    "destacado": false,
+    "en_catalogo": true,
+    "uso_recomendado": "Fúndelo en quesadillas, úsalo en preparaciones de birria o combínalo con papas y verduras recién cocinadas.",
+    "conservacion": "Mantén el producto refrigerado, conserva su envase cerrado y evita dejarlo fuera de refrigeración durante periodos prolongados. Sigue la temperatura, la fecha de consumo y las instrucciones de conservación indicadas en su etiqueta.",
+    "fuente": "https://quesoscarranco.com.mx/productos/queso-asadero/"
+  }
+},
+{
+  "model": "catalogo.producto",
+  "pk": 8,
+  "fields": {
+    "created_at": "2026-10-12T02:36:40.752Z",
+    "updated_at": "2026-10-12T02:36:40.752Z",
+    "sku": "CARR-MANTEQUILLA",
+    "nombre": "Mantequilla Carranco",
+    "slug": "mantequilla",
+    "legacy_id": "mantequilla",
+    "categoria": 4,
+    "descripcion": "Un ingrediente para dar sabor a panes, recetas y preparaciones caseras. Un toque de mantequilla puede acompañar desde el desayuno hasta la repostería.",
+    "presentacion": "225 g",
+    "precio_catalogo": "60.00",
+    "precio_academico": "2.00",
+    "stock": 3,
+    "stock_reservado": 0,
+    "imagen": "",
+    "imagen_url": "https://quesoscarranco.com.mx/wp-content/uploads/2024/11/CARRANCO_MANTEQUILLA_SIN-SAL_90G-1024x1024-600x600.jpg",
+    "galeria": [
+      {
+        "alt": "Envase de Mantequilla Carranco; fotografía del fabricante o imagen ilustrativa del conjunto",
+        "src": "https://quesoscarranco.com.mx/wp-content/uploads/2024/11/CARRANCO_MANTEQUILLA_SIN-SAL_90G-1024x1024-600x600.jpg",
+        "caption": "La fotografía puede mostrar un gramaje distinto. La presentación seleccionada pertenece al prototipo académico."
+      },
+      {
+        "alt": "Otro envase de mantequilla Carranco con un gramaje distinto al simulado",
+        "src": "https://quesoscarranco.com.mx/wp-content/uploads/2024/11/CARRANCO_MANTEQUILLA_SIN-SAL_200G-1024x1024-600x600.jpg",
+        "caption": "Envase alternativo del fabricante; el gramaje fotografiado no es la presentación simulada de 225 g."
+      }
+    ],
+    "etiqueta": "Para cocinar",
+    "activo": true,
+    "destacado": false,
+    "en_catalogo": true,
+    "uso_recomendado": "Úsala para untar pan, saltear verduras o preparar recetas de repostería siguiendo las cantidades indicadas en cada receta.",
+    "conservacion": "Mantén el producto refrigerado, conserva su envase cerrado y evita dejarlo fuera de refrigeración durante periodos prolongados. Sigue la temperatura, la fecha de consumo y las instrucciones de conservación indicadas en su etiqueta.",
+    "fuente": "https://quesoscarranco.com.mx/productos/mantequilla/"
+  }
+},
+{
+  "model": "catalogo.producto",
+  "pk": 9,
+  "fields": {
+    "created_at": "2026-10-12T02:36:40.755Z",
+    "updated_at": "2026-10-12T02:43:26.634Z",
+    "sku": "CARR-DUO-TRADICION",
+    "nombre": "Dúo de tradición",
+    "slug": "duo-tradicion",
+    "legacy_id": "duo-tradicion",
+    "categoria": 5,
+    "descripcion": "Conjunto de demostración con un Ranchero y un Panela. La promoción y las presentaciones son ficticias y las fotografías son ilustrativas.",
+    "presentacion": "Ranchero 400 g + Panela 400 g",
+    "precio_catalogo": "160.00",
+    "precio_academico": "2.00",
+    "stock": 6,
+    "stock_reservado": 1,
+    "imagen": "",
+    "imagen_url": "https://images.unsplash.com/photo-1695606392694-93de9b0bf320?auto=format&fit=crop&w=800&q=85",
+    "galeria": [
+      {
+        "alt": "Envase de Dúo de tradición; fotografía del fabricante o imagen ilustrativa del conjunto",
+        "src": "https://images.unsplash.com/photo-1695606392694-93de9b0bf320?auto=format&fit=crop&w=800&q=85",
+        "caption": "La fotografía puede mostrar un gramaje distinto. La presentación seleccionada pertenece al prototipo académico."
+      },
+      {
+        "alt": "Tabla de quesos ilustrativa para compartir",
+        "src": "https://images.unsplash.com/photo-1695606452858-39038806b143?auto=format&fit=crop&w=1200&q=85",
+        "caption": "Fotografía ilustrativa. El conjunto y su promoción son una simulación académica."
+      }
+    ],
+    "etiqueta": "Oferta simulada",
+    "activo": true,
+    "destacado": false,
+    "en_catalogo": false,
+    "uso_recomendado": "Combina tu selección en ensaladas, antojitos o una mesa para compartir en familia.",
+    "conservacion": "Mantén el producto refrigerado, conserva su envase cerrado y evita dejarlo fuera de refrigeración durante periodos prolongados. Sigue la temperatura, la fecha de consumo y las instrucciones de conservación indicadas en su etiqueta.",
+    "fuente": "https://quesoscarranco.com.mx/category/productos/"
+  }
+}
+]
