@@ -13,3 +13,5 @@ class VerificationAdmin(ReadOnlyAdmin):
     list_display=["created_at"]
     def has_view_permission(self,request,obj=None): return request.user.is_superuser
     def has_change_permission(self,request,obj=None): return request.user.is_superuser
+
+# Credentials and card data are never stored in admin records.

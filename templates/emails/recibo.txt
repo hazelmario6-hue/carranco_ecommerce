@@ -1,0 +1,17 @@
+Hola {{ pedido.usuario.first_name }},
+La pasarela confirmó el pago de tu pedido {{ pedido.numero }}.
+{% if es_prueba %}OPERACIÓN DE PRUEBA: no representa un cargo real.{% endif %}
+Fecha de confirmación: {{ pedido.inventario_descontado_at|date:"d/m/Y H:i" }}
+Pasarela: {{ pago.proveedor }}
+Referencia de pago: {{ pago.payment_id_externo }}
+
+Productos (precios de catálogo):
+{% for item in items %}{{ item.nombre_producto }} · {{ item.presentacion }} × {{ item.cantidad }}: ${{ item.subtotal|floatformat:2 }} MXN
+{% endfor %}
+Total de catálogo: ${{ pedido.total_catalogo|floatformat:2 }} MXN
+Importe confirmado por la pasarela: ${{ pago.monto|floatformat:2 }} {{ pago.moneda }}
+El importe de pago académico puede ser distinto del precio de catálogo.
+Consulta tu recibo y estado actual del pedido (requiere iniciar sesión):
+{{ url }}
+Este recibo de compra no es una factura fiscal CFDI.
+Carranco · Proyecto académico universitario

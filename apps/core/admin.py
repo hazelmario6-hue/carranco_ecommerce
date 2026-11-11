@@ -14,3 +14,11 @@ class AuditoriaAdmin(ReadOnlyAdmin):
 admin.site.site_header="Quesos Carranco"
 admin.site.site_title="Carranco · Administración"
 admin.site.index_title="Panel administrativo"
+
+from .models import CorreoPendiente
+@admin.register(CorreoPendiente)
+class CorreoAdmin(ReadOnlyAdmin):
+    list_display=["id","asunto","destinatario","estado","intentos","enviado_at","ultimo_error"]
+    list_filter=["estado"]
+    def has_view_permission(self,request,obj=None): return request.user.is_superuser
+    def has_change_permission(self,request,obj=None): return request.user.is_superuser

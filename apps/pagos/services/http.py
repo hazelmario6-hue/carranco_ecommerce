@@ -4,12 +4,13 @@ from urllib.parse import urlsplit
 from decimal import Decimal,InvalidOperation
 from django.core.exceptions import ValidationError
 
-def api(method,url,*,headers=None,payload=None,auth=None):
+def api(method,url,*,headers=None,payload=None,auth=None,expect_list=False):
     try:
         response=requests.request(method,url,headers={"Content-Type":"application/json",**(headers or {})},data=simplejson.dumps(payload,use_decimal=True) if payload is not None else None,auth=auth,timeout=(3,8),allow_redirects=False)
-        if not 200<=response.status_code<300: raise ValidationError("La pasarela no pudo procesar la solicitud. Intenta más tarde.")
+        if not 200<=response.status_code<300:
+            raise ValidationError(f"La pasarela respondió HTTP {response.status_code}. No se pudo confirmar la operación; consulta el pedido antes de repetir el pago.")
         data=simplejson.loads(response.text,use_decimal=True)
-        if not isinstance(data,dict): raise ValidationError("Respuesta de pasarela no válida.")
+        if not isinstance(data,list if expect_list else dict): raise ValidationError("Respuesta de pasarela no válida.")
         return data
     except (requests.RequestException,ValueError):
         raise ValidationError("No fue posible contactar a la pasarela. El pedido conserva su estado.")

@@ -8,7 +8,7 @@ from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from apps.pedidos.views import owned
 from .services import mercadopago,openpay
-from .services.gateway import start,configured
+from .services.gateway import start,configured,synchronize
 from .services.confirmation import confirm
 from .models import VerificacionOpenpay
 @login_required
@@ -51,3 +51,15 @@ def webhook_openpay(request):
         return JsonResponse({"ok":True})
     except (ValueError,TypeError,AttributeError,KeyError): return JsonResponse({"ok":False},status=400)
     except ValidationError: return JsonResponse({"ok":False},status=503)
+
+
+@login_required
+@require_POST
+def consult(request,numero):
+    order=owned(request,numero)
+    try:
+        order=synchronize(order.pk,request.user)
+        messages.info(request,"Estado consultado con la pasarela: "+order.get_estado_pago_display()+".")
+    except ValidationError as error:
+        messages.error(request," ".join(error.messages))
+    return redirect("pedidos:confirmacion",numero=order.numero)

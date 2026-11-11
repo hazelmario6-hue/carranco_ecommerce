@@ -1,5 +1,6 @@
+{% if footer_only %}{% include 'includes/disclosure.html' %}{% else %}
 {% load static %}
-{% if not footer_only %}
+
 <!DOCTYPE html>
 <html lang="es-MX">
 <head>
@@ -22,10 +23,17 @@
 <link rel="stylesheet" href="{% static 'css/footer.css' %}">
 <script src="{% static 'js/main.js' %}" defer></script>
 <script src="{% static 'js/carrito.js' %}" defer></script>
+{% if request.app_mode %}
+<link rel="stylesheet" href="{% static 'css/app.css' %}">
+<script src="{% static 'js/app.js' %}" defer></script>
+{% endif %}
 {% block scripts %}{% endblock %}
 </head>
-<body class="{% block body_class %}{% endblock %}" data-cart-url="{% url 'carrito:actualizar' %}" data-import-url="{% url 'carrito:importar' %}" data-cart-page="{% url 'carrito:detalle' %}">
+<body class="{% block body_class %}{% endblock %}{% if request.app_mode %} app-mode{% endif %}" data-cart-url="{% url 'carrito:actualizar' %}" data-import-url="{% url 'carrito:importar' %}" data-cart-page="{% url 'carrito:detalle' %}">
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    {% if request.app_mode %}
+    <header class="app-header"><a class="app-wordmark" href="{% url 'core:index' %}">Carranco<span>QUESOS · SAN LUIS POTOSÍ</span></a><a class="app-about-link" href="{% url 'core:acerca_app' %}" aria-label="Ayuda y acerca de la aplicación">•••</a></header>
+    {% else %}
     <header class="site-header">
         <div class="container navbar">
             <a class="brand" href="{% url 'core:index' %}" aria-label="Quesos Carranco, inicio">
@@ -47,11 +55,13 @@
             </nav>
         </div>
     </header>
+    {% endif %}
 
     
 <div hidden id="csrf-token">{% csrf_token %}</div>
 {% if messages %}<div class="container messages" aria-live="polite">{% for message in messages %}<p class="notice {{ message.tags }}">{{ message }}</p>{% endfor %}</div>{% endif %}
 <main id="contenido">{% block content %}{% endblock %}</main>
+{% if not request.app_mode %}
 <footer class="site-footer">
         <div class="container footer-grid">
             <div class="footer-brand"><a class="brand" href="{% url 'core:index' %}" aria-label="Quesos Carranco, inicio"><img data-brand-logo src="https://quesoscarranco.com.mx/wp-content/uploads/2024/11/carranco-white-logo-200x104.png" width="154" height="64" alt="Quesos Carranco"><span class="brand-fallback" hidden>Carranco<small>DESDE 1885</small></span></a><p>Una tradición quesera de San Luis Potosí. Sabores que acompañan recetas, encuentros y momentos en familia.</p></div>
@@ -60,15 +70,12 @@
             <div class="footer-social"><h3>Compartimos la tradición</h3><div class="social-links"><button type="button" data-social="Facebook" aria-label="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></button><button type="button" data-social="Instagram" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></button><button type="button" data-social="X" aria-label="X"><i class="fa-brands fa-x-twitter" aria-hidden="true"></i></button><button type="button" data-social="YouTube" aria-label="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></button><button type="button" data-social="TikTok" aria-label="TikTok"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></button><button type="button" data-whatsapp aria-label="WhatsApp, asistente"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></button><button type="button" data-social="Telegram" aria-label="Telegram"><i class="fa-brands fa-telegram" aria-hidden="true"></i></button></div></div>
         </div>
         <div class="container"><p class="credits">© <span id="current-year">{% now "Y" %}</span> Quesos Carranco. Fotografías ambientales: Unsplash. Marca y fotografías de producto: Carranco. Importes en MXN.</p></div>
-{% endif %}
-        <section class="footer-disclosure" aria-labelledby="footer-disclosure-title">
-            <h2 id="footer-disclosure-title">Proyecto académico universitario</h2>
-            <p>Este sitio fue desarrollado exclusivamente con fines académicos como parte de un proyecto de Comercio Electrónico. No representa ni sustituye el sitio, las tiendas, los perfiles sociales ni los canales oficiales de Quesos Carranco.</p>
-        </section>
-{% if not footer_only %}
+{% include 'includes/disclosure.html' %}
     </footer>
+{% endif %}
+{% if request.app_mode %}{% include "includes/app_nav.html" %}{% endif %}
 
-    <button class="whatsapp-float" type="button" data-whatsapp aria-label="Abrir asistente Carranco"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span>¿Te ayudamos?</span></button>
+    {% if not request.app_mode %}<button class="whatsapp-float" type="button" data-whatsapp aria-label="Abrir asistente Carranco"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span>¿Te ayudamos?</span></button>{% endif %}
     <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
     <dialog class="modal" id="info-dialog" aria-labelledby="info-title"><div class="modal-top"><p class="eyebrow">QUESOS CARRANCO</p><button class="icon-button close-dialog" type="button" data-close-dialog aria-label="Cerrar ventana"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div><h2 id="info-title"></h2><p id="info-message"></p><button class="button button-navy" type="button" data-close-dialog>Entendido</button></dialog>

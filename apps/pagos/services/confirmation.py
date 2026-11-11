@@ -1,10 +1,12 @@
 import uuid
 from django.core.exceptions import ValidationError
+from django.conf import settings
+from apps.pedidos.recibos import queue_receipt
 from django.db import transaction
 from django.utils import timezone
 from apps.pedidos.models import Pedido,MovimientoInventario,HistorialPedido
 from apps.catalogo.models import Producto
-from apps.pagos.models import Pago
+from apps.pagos.models import Pago,IntentoPago
 from apps.core.models import Auditoria
 @transaction.atomic
 def confirm(provider,data):
@@ -12,9 +14,12 @@ def confirm(provider,data):
     except (ValueError,TypeError,KeyError): raise ValidationError("Referencia de pago no válida.")
     order=Pedido.objects.select_for_update().filter(referencia=reference).first()
     if order is None or order.metodo_pago!=provider: raise ValidationError("El pago no corresponde a un pedido de esta pasarela.")
+    attempt=IntentoPago.objects.filter(pedido=order).first()
+    if attempt and attempt.en_vivo is not None and attempt.en_vivo!=settings.PAYMENTS_LIVE:
+        raise ValidationError("El intento pertenece a otro entorno de pago.")
     amount=data["amount"]
     if not amount.is_finite() or amount!=order.total_academico or data["currency"]!="MXN": raise ValidationError("El monto o la moneda no coinciden con el pedido.")
-    payment,created=Pago.objects.get_or_create(proveedor=provider,payment_id_externo=data["id"],defaults={"pedido":order,"monto":amount,"moneda":"MXN","estado":data["status"],"metodo_pago":data["method"]})
+    payment,created=Pago.objects.get_or_create(proveedor=provider,payment_id_externo=data["id"],defaults={"pedido":order,"monto":amount,"moneda":"MXN","estado":data["status"],"metodo_pago":data["method"],"en_vivo":settings.PAYMENTS_LIVE})
     if payment.pedido_id!=order.pk: raise ValidationError("El identificador externo ya pertenece a otro pedido.")
     if order.inventario_descontado_at:
         if created and data["status"]=="aprobado":
@@ -46,4 +51,5 @@ def confirm(provider,data):
     previous=order.estado;order.estado="pagado";order.estado_pago="aprobado";order.total_cobrado=amount;order.reserva_activa=False;order.inventario_descontado_at=timezone.now();order.save()
     HistorialPedido.objects.create(pedido=order,estado_anterior=previous,estado_nuevo="pagado",comentario="Confirmación verificada por "+provider)
     Auditoria.objects.create(evento="pago_confirmado",objeto=order.numero)
+    queue_receipt(order,payment)
     return order

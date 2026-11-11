@@ -5,6 +5,9 @@ class IntentoPago(TimeStamped):
     proveedor=models.CharField(max_length=25)
     identificador=models.CharField(max_length=150,blank=True)
     url=models.URLField(max_length=1500,blank=True)
+    estado=models.CharField(max_length=15,default="nuevo")
+    en_vivo=models.BooleanField(null=True,blank=True)
+    ultima_consulta_at=models.DateTimeField(null=True,blank=True)
     class Meta:
         db_table="cc_intentos_pago"
 class Pago(TimeStamped):
@@ -13,6 +16,7 @@ class Pago(TimeStamped):
     payment_id_externo=models.CharField(max_length=150)
     monto=models.DecimalField(max_digits=12,decimal_places=2)
     moneda=models.CharField(max_length=3,default="MXN")
+    en_vivo=models.BooleanField(null=True,blank=True)
     estado=models.CharField(max_length=20)
     metodo_pago=models.CharField(max_length=50)
     class Meta:

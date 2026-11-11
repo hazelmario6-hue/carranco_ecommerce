@@ -8,6 +8,7 @@ from django.db import transaction
 from django.utils import timezone
 from apps.catalogo.models import Producto
 from apps.cuentas.models import Direccion
+from apps.cuentas.verificacion import is_verified
 from apps.carrito.services import summarize,items
 from apps.core.models import Auditoria
 from .models import Pedido,PedidoItem,MovimientoInventario,HistorialPedido
@@ -19,6 +20,8 @@ def make_quote(user,cart):
 @transaction.atomic
 def create_order(user,session,address_id,provider,key,quote):
     get_user_model().objects.select_for_update().get(pk=user.pk)
+    if settings.EMAIL_REQUIRE_VERIFICATION and not is_verified(user):
+        raise ValidationError("Verifica tu correo antes de crear un pedido.")
     previous=Pedido.objects.filter(usuario=user,clave_idempotencia=key).first()
     if previous: return previous
     address=Direccion.objects.filter(pk=address_id,usuario=user).first()
@@ -34,7 +37,7 @@ def create_order(user,session,address_id,provider,key,quote):
     amount=cart["academico"].quantize(Decimal("0.01"))
     if amount<=0 or amount>settings.ACADEMIC_MAX_CHARGE: raise ValidationError("El importe a pagar supera el límite permitido. Reduce la selección.")
     snapshot={field:getattr(address,field) for field in ["calle","numero_exterior","numero_interior","colonia","codigo_postal","ciudad","estado","referencias"]}
-    order=Pedido.objects.create(usuario=user,direccion=address,direccion_snapshot=snapshot,clave_idempotencia=key,subtotal_catalogo=cart["subtotal"],envio=cart["envio"],total_catalogo=cart["total"],total_academico=amount,metodo_pago=provider,reserva_expira_at=timezone.now()+timedelta(minutes=settings.RESERVATION_MINUTES),aviso_academico_aceptado_at=timezone.now())
+    order=Pedido.objects.create(usuario=user,correo_cliente=user.email,direccion=address,direccion_snapshot=snapshot,clave_idempotencia=key,subtotal_catalogo=cart["subtotal"],envio=cart["envio"],total_catalogo=cart["total"],total_academico=amount,metodo_pago=provider,reserva_expira_at=timezone.now()+timedelta(minutes=settings.RESERVATION_MINUTES),aviso_academico_aceptado_at=timezone.now())
     for product in products:
         qty=raw[str(product.pk)]
         if not product.activo or product.stock_disponible<qty: raise ValidationError("Las existencias cambiaron. Revisa tu selección.")

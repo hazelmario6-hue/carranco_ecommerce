@@ -1,0 +1,6 @@
+Hola {{ nombre }},
+Confirma tu correo para usar tu cuenta Carranco:
+{{ url }}
+El enlace vence en {{ horas }} horas y solo se puede utilizar una vez.
+Si no solicitaste esta cuenta o verificación, ignora este mensaje.
+Carranco · Proyecto académico universitario

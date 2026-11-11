@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.db import transaction
 from django.utils import timezone
-from .models import Direccion,PerfilCliente,IntentoLogin
+from .models import Direccion,PerfilCliente,IntentoLogin,VerificacionCorreo
 User=get_user_model()
 class RegistroForm(UserCreationForm):
     email=forms.EmailField(label="Correo electrónico",max_length=150)
@@ -30,8 +30,10 @@ class RegistroForm(UserCreationForm):
         user.email=user.username
         user.is_staff=False
         user.is_superuser=False
+        user.is_active=False
         user.save()
         PerfilCliente.objects.create(usuario=user,telefono=self.cleaned_data["telefono"])
+        VerificacionCorreo.objects.create(usuario=user,email=user.email,activar_al_verificar=True)
         return user
 class AccesoForm(AuthenticationForm):
     username=forms.CharField(label="Usuario o correo",max_length=150)
@@ -69,3 +71,6 @@ class DireccionForm(forms.ModelForm):
         model=Direccion
         exclude=["usuario","created_at","updated_at"]
         labels={"numero_exterior":"Número exterior","numero_interior":"Número interior","codigo_postal":"Código postal","predeterminada":"Dirección predeterminada"}
+
+class ReenviarCorreoForm(forms.Form):
+    email=forms.EmailField(label="Correo de tu cuenta",max_length=150)

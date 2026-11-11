@@ -15,12 +15,14 @@ def account():
     data=api("GET",BASE+"/users/me",headers=headers())
     if not settings.PAYMENTS_LIVE and not settings.MP_ACCESS_TOKEN.startswith("TEST-") and "test_user" not in data.get("tags",[]):
         raise ValidationError("Las credenciales requieren revisar el modo de prueba. No se inició el cobro.")
+    if settings.PAYMENTS_LIVE and (settings.MP_ACCESS_TOKEN.startswith("TEST-") or "test_user" in data.get("tags",[])):
+        raise ValidationError("No se permiten credenciales de prueba en modo de cobros reales.")
     return data
 
 def create(order,ip=""):
     account()
     back=settings.APP_URL+reverse("pedidos:confirmacion",kwargs={"numero":order.numero})
-    data={"items":[{"id":order.numero,"title":"Pago Quesos Carranco · "+order.numero,"quantity":1,"currency_id":"MXN","unit_price":order.total_academico}],"payer":{"name":order.usuario.first_name,"surname":order.usuario.last_name,"email":order.usuario.email},"external_reference":str(order.referencia),"back_urls":{"success":back,"pending":back,"failure":back},"notification_url":settings.APP_URL+reverse("pagos:webhook_mp"),"expires":True,"expiration_date_to":order.reserva_expira_at.isoformat(),"payment_methods":{"excluded_payment_types":[{"id":"ticket"},{"id":"atm"}],"installments":1}}
+    data={"items":[{"id":order.numero,"title":"Pago Quesos Carranco · "+order.numero,"quantity":1,"currency_id":"MXN","unit_price":order.total_academico}],"payer":{"name":order.usuario.first_name,"surname":order.usuario.last_name,"email":(settings.MP_TEST_BUYER_EMAIL or order.usuario.email) if not settings.PAYMENTS_LIVE else order.usuario.email},"external_reference":str(order.referencia),"back_urls":{"success":back,"pending":back,"failure":back},"notification_url":settings.APP_URL+reverse("pagos:webhook_mp"),"expires":True,"expiration_date_to":order.reserva_expira_at.isoformat(),"payment_methods":{"excluded_payment_types":[{"id":"ticket"},{"id":"atm"}],"installments":1}}
     if settings.APP_URL.startswith("https://"): data["auto_return"]="approved"
     result=api("POST",BASE+"/checkout/preferences",headers={**headers(),"X-Idempotency-Key":str(order.referencia)},payload=data)
     url=result.get("init_point") if settings.PAYMENTS_LIVE else result.get("sandbox_init_point") or result.get("init_point")
@@ -48,3 +50,12 @@ def fetch(payment_id):
     if str(data.get("id"))!=str(payment_id) or data.get("live_mode") is not settings.PAYMENTS_LIVE: raise ValidationError("La operación no corresponde al entorno configurado.")
     status={"approved":"aprobado","pending":"pendiente","in_process":"pendiente","authorized":"pendiente","rejected":"rechazado","cancelled":"cancelado","refunded":"reembolsado","charged_back":"revision"}.get(data.get("status"),"revision")
     return {"id":str(data["id"]),"reference":data.get("external_reference"),"amount":money(data.get("transaction_amount",0)),"currency":data.get("currency_id"),"status":status,"method":str(data.get("payment_type_id",""))[:50]}
+
+
+def search(order):
+    from urllib.parse import urlencode
+    result=api("GET",BASE+"/v1/payments/search?"+urlencode({"external_reference":str(order.referencia),"limit":10,"sort":"date_created","criteria":"desc"}),headers=headers())
+    rows=result.get("results",[])
+    if not isinstance(rows,list): raise ValidationError("Respuesta de consulta no válida.")
+    return [fetch(external_id(row.get("id"))) for row in rows[:10]
+            if isinstance(row,dict) and row.get("external_reference")==str(order.referencia)]

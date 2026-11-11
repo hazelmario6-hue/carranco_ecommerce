@@ -34,3 +34,11 @@ def fetch(payment_id):
     if str(data.get("id"))!=str(payment_id) or data.get("transaction_type")!="charge": raise ValidationError("Operación no válida.")
     status={"completed":"aprobado","in_progress":"pendiente","charge_pending":"pendiente","failed":"rechazado","cancelled":"cancelado","refunded":"reembolsado"}.get(data.get("status"),"revision")
     return {"id":str(data["id"]),"reference":data.get("order_id"),"amount":money(data.get("amount",0)),"currency":data.get("currency"),"status":status,"method":str(data.get("method","card"))[:50]}
+
+
+def search(order):
+    from urllib.parse import urlencode
+    rows=api("GET",endpoint()+"/charges?"+urlencode({"order_id":str(order.referencia),"limit":10}),
+        auth=(settings.OPENPAY_PRIVATE_KEY,""),expect_list=True)
+    return [fetch(external_id(row.get("id"))) for row in rows[:10]
+            if isinstance(row,dict) and row.get("order_id")==str(order.referencia)]

@@ -1,5 +1,7 @@
 # Quesos Carranco — e-commerce académico con Django y MySQL
 
+> **Actualización de noviembre de 2026:** para verificación de correo, recibos y conexión de pasarelas en Railway, sigue primero [README_CORREOS_Y_PAGOS.md](README_CORREOS_Y_PAGOS.md). El registro ahora crea cuentas pendientes de activación. Las pruebas de esta actualización se detallan en esa guía; los resultados históricos de este README corresponden a la entrega original.
+
 **PROYECTO ACADÉMICO · SITIO NO OFICIAL**
 
 Proyecto Django ejecutable con `python manage.py runserver`. Mantiene la interfaz de las tres entregas anteriores y completa cuentas, carrito, checkout, pedidos y administración. Las integraciones de Mercado Pago y Openpay están implementadas y requieren tus credenciales y un webhook HTTPS antes de efectuar operaciones externas. Apple Pay permanece oculto.

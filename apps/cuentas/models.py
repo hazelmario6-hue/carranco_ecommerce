@@ -30,3 +30,16 @@ class IntentoLogin(models.Model):
     updated_at=models.DateTimeField(auto_now=True)
     class Meta:
         db_table="cc_intentos_login"
+
+class VerificacionCorreo(models.Model):
+    usuario=models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name="verificacion_correo")
+    email=models.EmailField()
+    activar_al_verificar=models.BooleanField(default=False)
+    token_hash=models.CharField(max_length=64,blank=True)
+    vence_at=models.DateTimeField(null=True,blank=True)
+    verificado_at=models.DateTimeField(null=True,blank=True)
+    ultimo_envio=models.DateTimeField(null=True,blank=True)
+    ventana_envio=models.DateTimeField(null=True,blank=True)
+    envios_en_ventana=models.PositiveSmallIntegerField(default=0)
+    class Meta:
+        db_table="cc_verificaciones_correo"

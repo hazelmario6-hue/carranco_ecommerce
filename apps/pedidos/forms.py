@@ -6,7 +6,9 @@ class CheckoutForm(forms.Form):
     aceptar=forms.BooleanField(label="Acepto el total a pagar y autorizo continuar con el pago.",required=True)
     clave=forms.UUIDField(widget=forms.HiddenInput)
     resumen=forms.CharField(widget=forms.HiddenInput)
-    def __init__(self,*args,user,openpay=False,**kwargs):
+    def __init__(self,*args,user,openpay=False,mercadopago=False,**kwargs):
         super().__init__(*args,**kwargs)
         self.fields["direccion"].queryset=Direccion.objects.filter(usuario=user)
+        self.fields["proveedor"].choices=[]
+        if mercadopago: self.fields["proveedor"].choices.append(("mercadopago","Mercado Pago · tarjeta y métodos disponibles"))
         if openpay: self.fields["proveedor"].choices.append(("openpay","Openpay · tarjeta"))

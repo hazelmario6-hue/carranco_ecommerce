@@ -18,7 +18,7 @@ from django.utils import timezone
 from django.db import IntegrityError,transaction,connection
 from django.db.models.deletion import ProtectedError
 from apps.catalogo.models import Producto,Categoria
-from apps.cuentas.models import Direccion,PerfilCliente
+from apps.cuentas.models import Direccion,PerfilCliente,VerificacionCorreo
 from apps.carrito.services import summarize,change,KEY
 from apps.pedidos.models import Pedido,HistorialPedido,MovimientoInventario
 from apps.pedidos.services import create_order,make_quote,adjust_stock,transition,cancel_pending
@@ -36,6 +36,8 @@ class CommerceTests(TestCase):
         cls.user=User.objects.create_user(username="cliente@example.test",email="cliente@example.test",password="Clave-universitaria-2026",first_name="Mario",last_name="Ávalos")
         cls.other=User.objects.create_user(username="otro@example.test",email="otro@example.test",password="Otra-clave-valida-2026")
         PerfilCliente.objects.create(usuario=cls.user,telefono="4441234567")
+        for customer in [cls.user,cls.other]:
+            VerificacionCorreo.objects.create(usuario=customer,email=customer.email,verificado_at=timezone.now())
         cls.staff=User.objects.create_superuser(username="admin",email="admin@example.test",password="Clave-administrador-2026")
         cls.address=Direccion.objects.create(usuario=cls.user,calle="Universidad",numero_exterior="100",colonia="Centro",codigo_postal="78000",ciudad="San Luis Potosí",estado="SLP")
         cls.foreign_address=Direccion.objects.create(usuario=cls.other,calle="Otra",numero_exterior="2",colonia="Centro",codigo_postal="78000",ciudad="SLP",estado="SLP")
@@ -73,8 +75,8 @@ class CommerceTests(TestCase):
         self.assertRedirects(response,"/productos/queso-ranchero/")
     def test_07_registration(self):
         response=self.client.post("/cuenta/registro/",{"first_name":"Hazel","last_name":"Ávalos","email":"NUEVO@example.test","telefono":"4441234567","password1":"Mi-clave-larga-2026","password2":"Mi-clave-larga-2026","is_staff":"1","is_superuser":"1"})
-        self.assertRedirects(response,"/cuenta/")
-        user=User.objects.get(username="nuevo@example.test");self.assertFalse(user.is_staff);self.assertFalse(user.is_superuser);self.assertTrue(user.check_password("Mi-clave-larga-2026"))
+        self.assertRedirects(response,"/cuenta/verificar/")
+        user=User.objects.get(username="nuevo@example.test");self.assertFalse(user.is_active);self.assertFalse(user.is_staff);self.assertFalse(user.is_superuser);self.assertTrue(user.check_password("Mi-clave-larga-2026"))
     def test_08_weak_password_rejected(self):
         response=self.client.post("/cuenta/registro/",{"first_name":"A","last_name":"B","email":"weak@example.test","telefono":"4441234567","password1":"123","password2":"123"})
         self.assertEqual(response.status_code,200);self.assertFalse(User.objects.filter(email="weak@example.test").exists())
@@ -134,6 +136,7 @@ class CommerceTests(TestCase):
     def test_23_price_change_requires_new_consent(self):
         session={KEY:{str(self.product.pk):1}};quote=make_quote(self.user,summarize(session));self.product.precio_academico=Decimal("3.00");self.product.save()
         with self.assertRaises(ValidationError):self.order(qty=1,session=session,quote=quote)
+    @override_settings(MP_ACCESS_TOKEN="TEST-local-fixture",MP_WEBHOOK_SECRET="test-secret",APP_URL="https://carranco.example.test")
     def test_24_checkout_form_and_consent(self):
         self.login();session=self.client.session;session[KEY]={str(self.product.pk):2};session.save()
         response=self.client.get("/checkout/");initial=response.context["form"].initial
@@ -330,6 +333,8 @@ class ConcurrencyTests(TransactionTestCase):
         category=Categoria.objects.create(nombre="Frescos",slug="frescos")
         product=Producto.objects.create(sku="CARR-CONCURRENCIA",nombre="Última unidad",slug="ultima-unidad",legacy_id="ultima",categoria=category,descripcion="Prueba",presentacion="400 g",precio_catalogo=Decimal("80"),precio_academico=Decimal("2"),stock=1)
         users=[User.objects.create_user(username=f"concurrent-{n}",email=f"{n}@example.test",password="Clave-larga-prueba-2026") for n in range(2)]
+        for customer in users:
+            VerificacionCorreo.objects.create(usuario=customer,email=customer.email,verificado_at=timezone.now())
         addresses=[Direccion.objects.create(usuario=user,calle="Calle",numero_exterior="1",colonia="Centro",codigo_postal="78000",ciudad="SLP",estado="SLP") for user in users]
         barrier=Barrier(2)
         def worker(index):

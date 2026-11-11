@@ -16,3 +16,8 @@ class PerfilAdmin(ReadOnlyAdmin):
 @admin.register(Direccion)
 class DireccionAdmin(ReadOnlyAdmin):
     list_display=["usuario","calle","ciudad","codigo_postal","predeterminada"]
+
+from .models import VerificacionCorreo
+@admin.register(VerificacionCorreo)
+class VerificacionAdmin(ReadOnlyAdmin):
+    list_display=["usuario","email","verificado_at","ultimo_envio"]

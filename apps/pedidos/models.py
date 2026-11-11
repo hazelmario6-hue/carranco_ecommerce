@@ -8,6 +8,7 @@ class Pedido(TimeStamped):
     usuario=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.PROTECT,related_name="pedidos")
     direccion=models.ForeignKey("cuentas.Direccion",on_delete=models.PROTECT)
     direccion_snapshot=models.JSONField()
+    correo_cliente=models.EmailField(blank=True)
     clave_idempotencia=models.UUIDField(default=uuid.uuid4)
     referencia=models.UUIDField(default=uuid.uuid4,unique=True,editable=False)
     subtotal_catalogo=models.DecimalField(max_digits=12,decimal_places=2)
