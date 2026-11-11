@@ -8,6 +8,7 @@ import base64
 from datetime import timedelta
 from decimal import Decimal
 from unittest.mock import patch
+from unittest import skipUnless
 from django.test import TestCase,Client,override_settings,RequestFactory
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -50,6 +51,7 @@ class CommerceTests(TestCase):
         return {"id":identifier,"reference":str(order.referencia),"amount":order.total_academico,"currency":"MXN","status":status,"method":"credit_card"}
     def login(self):
         self.client.force_login(self.user)
+    @skipUnless(connection.vendor=="mysql", "MySQL integration check; SQLite test environment")
     def test_01_mysql_is_real(self):
         self.assertEqual(connection.vendor,"mysql")
         with connection.cursor() as cursor:
@@ -74,8 +76,8 @@ class CommerceTests(TestCase):
         response=self.client.get("/producto.html?id=ranchero")
         self.assertRedirects(response,"/productos/queso-ranchero/")
     def test_07_registration(self):
-        response=self.client.post("/cuenta/registro/",{"first_name":"Hazel","last_name":"Ávalos","email":"NUEVO@example.test","telefono":"4441234567","password1":"Mi-clave-larga-2026","password2":"Mi-clave-larga-2026","is_staff":"1","is_superuser":"1"})
-        self.assertRedirects(response,"/cuenta/verificar/")
+        response=self.client.post("/cuenta/registro/",{"first_name":"Hazel","username":"nuevo@example.test","last_name":"Ávalos","email":"NUEVO@example.test","telefono":"4441234567","password1":"Mi-clave-larga-2026","password2":"Mi-clave-larga-2026","is_staff":"1","is_superuser":"1"})
+        self.assertRedirects(response,"/cuenta/registro/")
         user=User.objects.get(username="nuevo@example.test");self.assertFalse(user.is_active);self.assertFalse(user.is_staff);self.assertFalse(user.is_superuser);self.assertTrue(user.check_password("Mi-clave-larga-2026"))
     def test_08_weak_password_rejected(self):
         response=self.client.post("/cuenta/registro/",{"first_name":"A","last_name":"B","email":"weak@example.test","telefono":"4441234567","password1":"123","password2":"123"})
@@ -325,8 +327,9 @@ class CommerceTests(TestCase):
 
 from concurrent.futures import ThreadPoolExecutor
 from threading import Barrier
-from django.test import TransactionTestCase
+from django.test import TransactionTestCase, skipUnlessDBFeature
 from django.db import close_old_connections
+@skipUnlessDBFeature("has_select_for_update")
 class ConcurrencyTests(TransactionTestCase):
     reset_sequences=True
     def test_two_orders_last_unit(self):

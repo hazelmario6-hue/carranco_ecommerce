@@ -207,7 +207,7 @@ LOGGING = {
 MAIL_PROVIDER = os.getenv("MAIL_PROVIDER", "console" if DEBUG else "resend").lower()
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 DEFAULT_FROM_EMAIL = os.getenv(
-    "DEFAULT_FROM_EMAIL", "Carranco <no-reply@example.com>"
+    "DEFAULT_FROM_EMAIL", "Quesos Carranco <no-reply@servicioslnformaticos.it.com>"
 )
 EMAIL_REPLY_TO = os.getenv("EMAIL_REPLY_TO", "")
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
@@ -216,3 +216,5 @@ EMAIL_VERIFY_RESEND_SECONDS = 60
 EMAIL_REQUIRE_VERIFICATION = True
 
 MP_TEST_BUYER_EMAIL = os.getenv("MP_TEST_BUYER_EMAIL", "")
+EMAIL_PIN_TTL_SECONDS = 600
+EMAIL_PIN_MAX_ATTEMPTS = 5

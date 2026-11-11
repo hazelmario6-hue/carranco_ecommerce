@@ -1,7 +1,5 @@
 {% extends "base.html" %}{% block title %}Acerca de · Carranco{% endblock %}
-{% block content %}<section class="container app-about"><p class="app-kicker">INFORMACIÓN Y AYUDA</p><h1>Tu espacio Carranco</h1><p>Todo lo que necesitas para conocer el proyecto y consultar tus compras.</p>
-<div class="app-link-list"><a href="{% url 'pedidos:historial' %}">Mis pedidos <span>→</span></a><a href="{% url 'core:ayuda' %}">Preguntas frecuentes <span>→</span></a><a href="{% url 'core:contacto' %}">Contacto <span>→</span></a><a href="{% url 'core:nosotros' %}">Nuestra historia <span>→</span></a></div>
-{% include 'includes/disclosure.html' %}
+{% block content %}<section class="container app-about"><p class="eyebrow">CARRANCO</p><h1>Acerca de</h1><p>Tradición potosina al alcance de tu mano.</p>
+<details class="about-disclosure"><summary>Proyecto académico universitario</summary>{% include 'includes/disclosure.html' %}</details>
 <p class="app-small-print">La aplicación requiere conexión para consultar productos, iniciar sesión y realizar pedidos. Los precios y la disponibilidad se verifican en el servidor. Importes en MXN.</p>
-<p class="app-small-print">Marca y fotografías de producto: Carranco. Fotografías ambientales: Unsplash.</p>
-</section>{% endblock %}
+<p class="app-small-print">Marca y fotografías de producto: Carranco. Fotografías ambientales del sitio: Unsplash.</p></section>{% endblock %}

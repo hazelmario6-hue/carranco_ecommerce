@@ -1,3 +1,5 @@
+> Actualización 2026-11-11: consulta [README_ACTUALIZACION_2026-11-11.md](README_ACTUALIZACION_2026-11-11.md). El registro actual usa PIN en la misma pantalla y el remitente usa servicioslnformaticos.it.com.
+
 # Carranco: interfaz para el APK
 
 > Esta guía describe la actualización de diseño anterior. El paquete actual también incorpora correos y pagos: sigue primero `README_CORREOS_Y_PAGOS.md`, que requiere cuatro migraciones nuevas y variables de correo/pasarelas.

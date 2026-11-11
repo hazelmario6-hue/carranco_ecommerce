@@ -1,0 +1,18 @@
+{% load static %}
+<header class="app-header">
+  <a class="app-brand" href="{% url 'core:index' %}" aria-label="Carranco, inicio"><img src="{% static 'img/carranco-logo.png' %}" width="200" height="104" alt="Quesos Carranco"></a>
+  <button class="app-menu-button" type="button" data-open-menu aria-controls="app-menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Menú</button>
+</header>
+<dialog id="app-menu" class="app-drawer" aria-labelledby="menu-title">
+  <div class="drawer-heading"><h2 id="menu-title">Menú</h2><button type="button" data-close-menu aria-label="Cerrar menú">×</button></div>
+  <p class="eyebrow">DE NUESTRA TRADICIÓN A TU MESA</p>
+  <nav aria-label="Información y ayuda">
+    <a href="{% url 'core:nosotros' %}">Nuestra historia <span aria-hidden="true">→</span></a>
+    <a href="{% url 'core:contacto' %}">Contacto <span aria-hidden="true">→</span></a>
+    <a href="{% url 'core:ayuda' %}">Preguntas frecuentes <span aria-hidden="true">→</span></a>
+    {% if user.is_authenticated %}<a href="{% url 'pedidos:historial' %}">Mis pedidos <span aria-hidden="true">→</span></a>{% endif %}
+    <a href="{% url 'core:acerca_app' %}">Acerca de <span aria-hidden="true">→</span></a>
+  </nav>
+  {% if user.is_authenticated %}<form method="post" action="{% url 'cuentas:logout' %}">{% csrf_token %}<button class="button button-outline" type="submit">Cerrar sesión</button></form>{% else %}<a class="button button-navy" href="{% url 'cuentas:login' %}">Iniciar sesión</a><a class="drawer-register" href="{% url 'cuentas:registro' %}">Crear cuenta</a>{% endif %}
+  <p class="drawer-signature">San Luis Potosí · Desde 1885</p>
+</dialog>

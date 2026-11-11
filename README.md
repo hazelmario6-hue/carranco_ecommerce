@@ -1,3 +1,5 @@
+> Actualización 2026-11-11: consulta [README_ACTUALIZACION_2026-11-11.md](README_ACTUALIZACION_2026-11-11.md). El registro actual usa PIN en la misma pantalla y el remitente usa servicioslnformaticos.it.com.
+
 # Quesos Carranco — e-commerce académico con Django y MySQL
 
 > **Actualización de noviembre de 2026:** para verificación de correo, recibos y conexión de pasarelas en Railway, sigue primero [README_CORREOS_Y_PAGOS.md](README_CORREOS_Y_PAGOS.md). El registro ahora crea cuentas pendientes de activación. Las pruebas de esta actualización se detallan en esa guía; los resultados históricos de este README corresponden a la entrega original.

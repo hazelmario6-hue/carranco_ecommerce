@@ -14,10 +14,10 @@
         const form=event.target;if(!form.matches(".cart-add-form"))return;
         event.preventDefault();
         const fields=new FormData(form),button=form.querySelector("button[type=submit]");
-        if(button)button.disabled=true;
+        if(button){button.disabled=true;button.setAttribute("aria-busy","true");}
         const perform=()=>post(document.body.dataset.cartUrl,{producto:Number(fields.get("producto")),cantidad:Number(fields.get("cantidad")),operacion:"add"});
         const task=queue.then(perform);queue=task.catch(()=>{});
-        task.then(()=>window.Carranco.notify("Producto agregado al carrito.")).catch(error=>window.Carranco.notify(error.message)).finally(()=>{if(button)button.disabled=false;});
+        task.then(()=>window.Carranco.notify(`${form.dataset.productName || "Producto"} agregado al carrito.`)).catch(error=>window.Carranco.notify(error.message)).finally(()=>{if(button){button.disabled=false;button.removeAttribute("aria-busy");}});
     });
     document.addEventListener("click",event=>{
         const button=event.target.closest("[data-quantity-step]");if(!button)return;

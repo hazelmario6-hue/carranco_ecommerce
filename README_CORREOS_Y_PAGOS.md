@@ -1,3 +1,5 @@
+> Actualización 2026-11-11: consulta [README_ACTUALIZACION_2026-11-11.md](README_ACTUALIZACION_2026-11-11.md). El registro actual usa PIN en la misma pantalla y el remitente usa servicioslnformaticos.it.com.
+
 # Carranco: verificación por correo, recibos y pasarelas
 
 Actualización del 10 de noviembre de 2026. Conserva el diseño web, el modo del APK, la navegación inferior y el contador del carrito. Los cambios se ejecutan en Django: para estas funciones no necesitas volver a compilar el APK.

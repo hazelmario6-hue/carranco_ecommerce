@@ -10,29 +10,34 @@ User=get_user_model()
 class RegistroForm(UserCreationForm):
     email=forms.EmailField(label="Correo electrónico",max_length=150)
     first_name=forms.CharField(label="Nombre",max_length=100)
-    last_name=forms.CharField(label="Apellidos",max_length=150)
-    telefono=forms.CharField(label="Teléfono",max_length=25)
+    username=forms.CharField(label="Usuario",max_length=150,validators=User._meta.get_field("username").validators)
     class Meta:
         model=User
-        fields=["first_name","last_name","email","telefono","password1","password2"]
+        fields=["first_name","username","email","password1","password2"]
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        for name,autocomplete in {"first_name":"given-name","username":"username","email":"email","password1":"new-password","password2":"new-password"}.items():
+            self.fields[name].widget.attrs["autocomplete"]=autocomplete
     def clean_email(self):
         email=self.cleaned_data["email"].strip().lower()
         if User.objects.filter(username=email).exists() or User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError("Este correo ya tiene una cuenta.")
         return email
-    def clean_telefono(self):
-        field=PerfilCliente._meta.get_field("telefono")
-        return field.clean(self.cleaned_data["telefono"],None)
+    def clean_username(self):
+        value=self.cleaned_data["username"].strip().lower()
+        if User.objects.filter(username__iexact=value).exists() or User.objects.filter(email__iexact=value).exists():
+            raise forms.ValidationError("Este usuario ya está registrado.")
+        return value
     @transaction.atomic
     def save(self,commit=True):
         user=super().save(commit=False)
-        user.username=self.cleaned_data["email"]
-        user.email=user.username
+        user.username=self.cleaned_data["username"]
+        user.email=self.cleaned_data["email"]
         user.is_staff=False
         user.is_superuser=False
         user.is_active=False
         user.save()
-        PerfilCliente.objects.create(usuario=user,telefono=self.cleaned_data["telefono"])
+        PerfilCliente.objects.create(usuario=user)
         VerificacionCorreo.objects.create(usuario=user,email=user.email,activar_al_verificar=True)
         return user
 class AccesoForm(AuthenticationForm):
@@ -46,7 +51,18 @@ class AccesoForm(AuthenticationForm):
             if attempt.bloqueado_hasta and attempt.bloqueado_hasta>timezone.now():
                 raise forms.ValidationError("Demasiados intentos. Espera 15 minutos antes de volver a intentarlo.")
         try:
-            cleaned=super().clean()
+            entered=self.cleaned_data["username"]
+            candidate=User.objects.filter(email__iexact=entered).first() if "@" in entered else User.objects.filter(username__iexact=entered).first()
+            if candidate:
+                self.cleaned_data["username"]=candidate.username
+            # A correct password can resume a pending registration, never an admin-disabled account.
+            pending=bool(candidate and not candidate.is_active and VerificacionCorreo.objects.filter(usuario=candidate,activar_al_verificar=True,verificado_at__isnull=True).exists())
+            if pending and candidate.check_password(self.cleaned_data.get("password", "")):
+                self.user_cache=candidate
+                self.pending_verification=True
+                cleaned=self.cleaned_data
+            else:
+                cleaned=super().clean()
         except forms.ValidationError:
             with transaction.atomic():
                 attempt=IntentoLogin.objects.select_for_update().get(clave=self.key)

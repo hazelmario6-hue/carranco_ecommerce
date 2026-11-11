@@ -11,3 +11,12 @@
   document.addEventListener("focusin", updateKeyboard);
   document.addEventListener("focusout", () => setTimeout(updateKeyboard, 100));
 })();
+
+(() => {
+  const drawer=document.querySelector("#app-menu"), opener=document.querySelector("[data-open-menu]");
+  if(!drawer||!opener)return;
+  opener.addEventListener("click",()=>{drawer.showModal();opener.setAttribute("aria-expanded","true");document.body.classList.add("modal-open");});
+  drawer.querySelector("[data-close-menu]").addEventListener("click",()=>drawer.close());
+  drawer.addEventListener("click",e=>{if(e.target===drawer){const r=drawer.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)drawer.close();}});
+  drawer.addEventListener("close",()=>{opener.setAttribute("aria-expanded","false");document.body.classList.remove("modal-open");opener.focus();});
+})();

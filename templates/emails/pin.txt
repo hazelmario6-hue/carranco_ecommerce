@@ -1,0 +1,7 @@
+Hola {{ nombre }},
+
+Tu código de verificación de Carranco es: {{ codigo }}
+
+Caduca en {{ minutos }} minutos y solo puedes utilizarlo una vez.
+Vuelve a la pantalla de registro e introduce el código.
+Si no solicitaste este registro, ignora este mensaje.

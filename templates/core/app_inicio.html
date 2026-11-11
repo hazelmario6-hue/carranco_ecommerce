@@ -1,14 +1,14 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load static %}
 {% block title %}Carranco · Inicio{% endblock %}
 {% block content %}
-<section class="container app-home">
-  <p class="app-kicker">DE NUESTRA TRADICIÓN A TU MESA</p>
-  <div class="app-welcome"><h1>El sabor de<br>estar en casa.</h1><span class="app-seal" aria-hidden="true">C<span>DESDE 1885</span></span></div>
-  <p class="app-intro">Encuentra tu favorito y prepara algo especial.</p>
-  <a class="app-search" href="{% url 'catalogo:productos' %}"><span aria-hidden="true">⌕</span> Explorar quesos y especialidades <span aria-hidden="true">→</span></a>
-  <div class="app-feature"><div><p class="app-kicker">HECHO PARA COMPARTIR</p><h2>Una mesa.<br>Muchas historias.</h2><a href="{% url 'catalogo:productos' %}">Ver el catálogo <span aria-hidden="true">→</span></a></div><div class="app-cheese-art" aria-hidden="true">◒</div></div>
-  <div class="app-section-heading"><h2>Tus próximos favoritos</h2><a href="{% url 'catalogo:productos' %}">Ver todos</a></div>
-  <div class="product-grid">{% for producto in destacados %}{% include 'catalogo/tarjeta.html' %}{% empty %}<div class="app-empty"><h3>Estamos preparando el catálogo</h3><p>Los productos aparecerán aquí cuando estén disponibles.</p><a href="{% url 'catalogo:productos' %}">Consultar catálogo</a></div>{% endfor %}</div>
-  <a class="app-story" href="{% url 'core:nosotros' %}"><span>CONOCE NUESTRA HISTORIA</span><strong>Tradición potosina, desde 1885.</strong><span aria-hidden="true">→</span></a>
+<section class="app-hero" aria-labelledby="home-title">
+  <img class="app-hero-photo" src="{% static 'img/mesa-carranco.jpg' %}" alt="Molletes preparados con queso Manchego Carranco" width="600" height="600" fetchpriority="high">
+  <div class="app-hero-copy"><img class="hero-brand" src="{% static 'img/carranco-logo.png' %}" alt="Carranco" width="200" height="104"><p class="app-kicker">TRADICIÓN POTOSINA</p><h1 id="home-title">El sabor de<br>estar en casa.</h1><a class="button button-gold" href="{% url 'catalogo:productos' %}">Comprar quesos <span aria-hidden="true">→</span></a></div>
 </section>
+<div class="container app-home">
+  <form class="app-search" action="{% url 'catalogo:productos' %}" role="search"><label class="sr-only" for="home-search">Buscar productos</label><input id="home-search" type="search" name="q" placeholder="¿Qué se te antoja hoy?"><button type="submit" aria-label="Buscar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg></button></form>
+  <div class="app-section-heading"><div><p class="app-kicker">PARA TU MESA</p><h2>Tus favoritos</h2></div><a href="{% url 'catalogo:productos' %}">Ver todos →</a></div>
+  <div class="app-product-rail" tabindex="0" role="region" aria-label="Productos destacados; desliza para ver más">{% for producto in destacados %}{% include 'catalogo/tarjeta.html' %}{% empty %}<div class="app-empty"><h3>Estamos preparando el catálogo</h3><p>Vuelve pronto para conocer nuestros productos.</p></div>{% endfor %}</div>
+  <a class="app-story" href="{% url 'core:nosotros' %}"><span class="app-story-year">1885</span><div><p class="app-kicker">HECHO CON HISTORIA</p><h2>De San Luis Potosí<br>a tu mesa.</h2><span>Conoce nuestra tradición →</span></div></a>
+</div>
 {% endblock %}

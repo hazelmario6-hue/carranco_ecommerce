@@ -5,7 +5,7 @@
 <html lang="es-MX">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="Quesos Carranco. Explora nuestros productos y conoce su tradición potosina.">
     <meta name="theme-color" content="#0D1B2A">
     <title>{% block title %}Quesos Carranco{% endblock %}</title>
@@ -19,25 +19,25 @@
     <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
     
     
-<link rel="stylesheet" href="{% static 'css/commerce.css' %}">
+<link rel="stylesheet" href="{% static 'css/commerce.css' %}?v=20261111">
 <link rel="stylesheet" href="{% static 'css/footer.css' %}">
 <script src="{% static 'js/main.js' %}" defer></script>
-<script src="{% static 'js/carrito.js' %}" defer></script>
+<script src="{% static 'js/carrito.js' %}?v=20261111" defer></script>
 {% if request.app_mode %}
-<link rel="stylesheet" href="{% static 'css/app.css' %}">
-<script src="{% static 'js/app.js' %}" defer></script>
+<link rel="stylesheet" href="{% static 'css/app.css' %}?v=20261111">
+<script src="{% static 'js/app.js' %}?v=20261111" defer></script>
 {% endif %}
 {% block scripts %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}{% if request.app_mode %} app-mode{% endif %}" data-cart-url="{% url 'carrito:actualizar' %}" data-import-url="{% url 'carrito:importar' %}" data-cart-page="{% url 'carrito:detalle' %}">
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
     {% if request.app_mode %}
-    <header class="app-header"><a class="app-wordmark" href="{% url 'core:index' %}">Carranco<span>QUESOS · SAN LUIS POTOSÍ</span></a><a class="app-about-link" href="{% url 'core:acerca_app' %}" aria-label="Ayuda y acerca de la aplicación">•••</a></header>
+    {% include "includes/app_header.html" %}
     {% else %}
     <header class="site-header">
         <div class="container navbar">
             <a class="brand" href="{% url 'core:index' %}" aria-label="Quesos Carranco, inicio">
-                <img data-brand-logo src="https://quesoscarranco.com.mx/wp-content/uploads/2024/11/carranco-white-logo-200x104.png" width="154" height="64" alt="Quesos Carranco">
+                <img data-brand-logo src="{% static 'img/carranco-logo.png' %}" width="154" height="64" alt="Quesos Carranco">
                 <span class="brand-fallback" hidden>Carranco<small>DESDE 1885</small></span>
             </a>
             <button class="icon-button menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-nav" hidden>
@@ -64,7 +64,7 @@
 {% if not request.app_mode %}
 <footer class="site-footer">
         <div class="container footer-grid">
-            <div class="footer-brand"><a class="brand" href="{% url 'core:index' %}" aria-label="Quesos Carranco, inicio"><img data-brand-logo src="https://quesoscarranco.com.mx/wp-content/uploads/2024/11/carranco-white-logo-200x104.png" width="154" height="64" alt="Quesos Carranco"><span class="brand-fallback" hidden>Carranco<small>DESDE 1885</small></span></a><p>Una tradición quesera de San Luis Potosí. Sabores que acompañan recetas, encuentros y momentos en familia.</p></div>
+            <div class="footer-brand"><a class="brand" href="{% url 'core:index' %}" aria-label="Quesos Carranco, inicio"><img data-brand-logo src="{% static 'img/carranco-logo.png' %}" width="154" height="64" alt="Quesos Carranco"><span class="brand-fallback" hidden>Carranco<small>DESDE 1885</small></span></a><p>Una tradición quesera de San Luis Potosí. Sabores que acompañan recetas, encuentros y momentos en familia.</p></div>
             <div><h3>Navegación</h3><ul class="footer-links"><li><a href="{% url 'core:index' %}">Inicio</a></li><li><a href="{% url 'catalogo:productos' %}">Productos</a></li><li><a href="{% url 'core:nosotros' %}">Nosotros</a></li><li><a href="{% url 'core:contacto' %}">Contacto</a></li></ul></div>
             <div><h3>Ayuda</h3><ul class="footer-links"><li><a href="{% url 'core:ayuda' %}">Preguntas frecuentes</a></li><li><button type="button" data-help="envios">Envíos</button></li><li><button type="button" data-help="pagos">Métodos de pago</button></li><li><a href="{% url 'pedidos:historial' %}">Seguimiento de pedido</a></li></ul></div>
             <div class="footer-social"><h3>Compartimos la tradición</h3><div class="social-links"><button type="button" data-social="Facebook" aria-label="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></button><button type="button" data-social="Instagram" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></button><button type="button" data-social="X" aria-label="X"><i class="fa-brands fa-x-twitter" aria-hidden="true"></i></button><button type="button" data-social="YouTube" aria-label="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></button><button type="button" data-social="TikTok" aria-label="TikTok"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></button><button type="button" data-whatsapp aria-label="WhatsApp, asistente"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></button><button type="button" data-social="Telegram" aria-label="Telegram"><i class="fa-brands fa-telegram" aria-hidden="true"></i></button></div></div>
