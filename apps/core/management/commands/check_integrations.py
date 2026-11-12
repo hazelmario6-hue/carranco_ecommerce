@@ -14,7 +14,7 @@ class Command(BaseCommand):
     def handle(self,*args,**options):
         origin=urlsplit(settings.APP_URL)
         self.stdout.write('APP_URL HTTPS: '+str(origin.scheme=='https' and bool(origin.hostname)))
-        self.stdout.write('Modo de pago: '+('REAL (importe académico)' if settings.PAYMENTS_LIVE else 'PRUEBAS, sin cobros reales'))
+        self.stdout.write('Modo de pago: '+('REAL (total de catálogo + envío)' if settings.PAYMENTS_LIVE else 'PRUEBAS (total de catálogo + envío), sin cobros reales'))
         sender=parseaddr(settings.DEFAULT_FROM_EMAIL)[1]
         self.stdout.write('Correo: '+settings.MAIL_PROVIDER+' · '+('variables presentes' if mail_configured() else 'FALTAN variables/remitente'))
         if sender.endswith('@resend.dev'):self.stdout.write('Remitente resend.dev: solo pruebas hacia el correo del propietario de la cuenta Resend.')

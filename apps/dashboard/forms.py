@@ -22,8 +22,8 @@ class StorefrontTextInput(StorefrontCopyMixin,forms.TextInput):
 class ProductoForm(forms.ModelForm):
     class Meta:
         model=Producto
-        fields=["sku","nombre","slug","legacy_id","categoria","descripcion","presentacion","precio_catalogo","precio_academico","imagen","imagen_url","activo","destacado","en_catalogo","etiqueta","uso_recomendado","conservacion"]
-        labels={"precio_catalogo":"Precio de catálogo","precio_academico":"Precio de cobro"}
+        fields=["sku","nombre","slug","legacy_id","categoria","descripcion","presentacion","precio_catalogo","imagen","imagen_url","activo","destacado","en_catalogo","etiqueta","uso_recomendado","conservacion"]
+        labels={"precio_catalogo":"Precio de venta"}
         widgets={"descripcion":forms.Textarea(attrs={"rows":4}),"uso_recomendado":forms.Textarea(attrs={"rows":3}),"conservacion":forms.Textarea(attrs={"rows":3})}
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
@@ -37,13 +37,19 @@ class ProductoForm(forms.ModelForm):
                 field.widget=widget
     def save(self,commit=True):
         product=super().save(commit=False)
+        # Campo heredado: se conserva en BD, pero los nuevos pedidos usan precio_catalogo.
+        product.precio_academico=product.precio_catalogo
         if commit:
             if product.pk:
-                product.save(update_fields=[*self.Meta.fields,"updated_at"])
+                product.save(update_fields=[*self.Meta.fields,"precio_academico","updated_at"])
             else:
                 product.save()
             self.save_m2m()
         return product
+    def clean_precio_catalogo(self):
+        price=self.cleaned_data["precio_catalogo"]
+        if price<=0: raise forms.ValidationError("El precio de venta debe ser mayor que cero.")
+        return price
     def clean_imagen(self):
         image=self.cleaned_data.get("imagen")
         if image and hasattr(image,"size") and image.size>2*1024*1024: raise forms.ValidationError("La imagen no debe superar 2 MB.")

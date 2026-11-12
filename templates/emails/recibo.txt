@@ -10,7 +10,7 @@ Productos (precios de catálogo):
 {% endfor %}
 Total de catálogo: ${{ pedido.total_catalogo|floatformat:2 }} MXN
 Importe confirmado por la pasarela: ${{ pago.monto|floatformat:2 }} {{ pago.moneda }}
-El importe de pago académico puede ser distinto del precio de catálogo.
+{% if pedido.total_academico != pedido.total_catalogo %}Pedido anterior: el importe cobrado difiere del total de catálogo mostrado.{% endif %}
 Consulta tu recibo y estado actual del pedido (requiere iniciar sesión):
 {{ url }}
 Este recibo de compra no es una factura fiscal CFDI.

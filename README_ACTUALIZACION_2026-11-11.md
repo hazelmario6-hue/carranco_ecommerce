@@ -1,5 +1,7 @@
 # Carranco · identidad móvil y correo con PIN
 
+> Los importes de pago cambiaron después de esta entrega. Lee [README_PRECIO_COMPLETO_2026-11-11.md](README_PRECIO_COMPLETO_2026-11-11.md) antes de configurar las pasarelas.
+
 Esta actualización parte del commit `75c3e8a` de `hazelmario6-hue/carranco_ecommerce`.
 Reemplaza las instrucciones anteriores sobre el registro mediante enlace por el flujo con PIN que se describe aquí. El dominio correcto tiene una **l minúscula** después de servicios: `servicioslnformaticos.it.com`.
 

@@ -14,7 +14,7 @@ from apps.core.models import Auditoria
 from .models import Pedido,PedidoItem,MovimientoInventario,HistorialPedido
 
 def fingerprint(cart):
-    return {"items":[[line["producto"].pk,line["cantidad"],str(line["producto"].precio_catalogo),str(line["producto"].precio_academico)] for line in cart["items"]],"academic":str(cart["academico"]),"shipping":str(cart["envio"])}
+    return {"items":[[line["producto"].pk,line["cantidad"],str(line["producto"].precio_catalogo)] for line in cart["items"]],"total":str(cart["total"]),"shipping":str(cart["envio"])}
 def make_quote(user,cart):
     return signing.dumps({"user":user.pk,**fingerprint(cart)},salt="carranco.checkout")
 @transaction.atomic
@@ -23,7 +23,10 @@ def create_order(user,session,address_id,provider,key,quote):
     if settings.EMAIL_REQUIRE_VERIFICATION and not is_verified(user):
         raise ValidationError("Verifica tu correo antes de crear un pedido.")
     previous=Pedido.objects.filter(usuario=user,clave_idempotencia=key).first()
-    if previous: return previous
+    if previous:
+        if previous.total_academico!=previous.total_catalogo:
+            raise ValidationError("Este pedido conserva un importe anterior. Crea uno nuevo con el precio completo.")
+        return previous
     address=Direccion.objects.filter(pk=address_id,usuario=user).first()
     if address is None: raise ValidationError("Selecciona una dirección de tu cuenta.")
     if provider not in {"mercadopago","openpay"}: raise ValidationError("Método de pago no válido.")
@@ -34,15 +37,15 @@ def create_order(user,session,address_id,provider,key,quote):
     try: quoted=signing.loads(quote,salt="carranco.checkout",max_age=900)
     except signing.BadSignature: raise ValidationError("El resumen venció. Actualiza el checkout y acepta el importe actual.")
     if quoted!={"user":user.pk,**fingerprint(cart)}: raise ValidationError("Cambió tu selección o su precio. Revisa y acepta el nuevo resumen.")
-    amount=cart["academico"].quantize(Decimal("0.01"))
-    if amount<=0 or amount>settings.ACADEMIC_MAX_CHARGE: raise ValidationError("El importe a pagar supera el límite permitido. Reduce la selección.")
+    amount=cart["total"].quantize(Decimal("0.01"))
+    if amount<=0: raise ValidationError("El total del pedido debe ser mayor que cero.")
     snapshot={field:getattr(address,field) for field in ["calle","numero_exterior","numero_interior","colonia","codigo_postal","ciudad","estado","referencias"]}
     order=Pedido.objects.create(usuario=user,correo_cliente=user.email,direccion=address,direccion_snapshot=snapshot,clave_idempotencia=key,subtotal_catalogo=cart["subtotal"],envio=cart["envio"],total_catalogo=cart["total"],total_academico=amount,metodo_pago=provider,reserva_expira_at=timezone.now()+timedelta(minutes=settings.RESERVATION_MINUTES),aviso_academico_aceptado_at=timezone.now())
     for product in products:
         qty=raw[str(product.pk)]
         if not product.activo or product.stock_disponible<qty: raise ValidationError("Las existencias cambiaron. Revisa tu selección.")
         product.stock_reservado+=qty;product.save(update_fields=["stock_reservado","updated_at"])
-        PedidoItem.objects.create(pedido=order,producto=product,sku=product.sku,nombre_producto=product.nombre,presentacion=product.presentacion,precio_unitario=product.precio_catalogo,precio_academico_unitario=product.precio_academico,cantidad=qty,subtotal=product.precio_catalogo*qty)
+        PedidoItem.objects.create(pedido=order,producto=product,sku=product.sku,nombre_producto=product.nombre,presentacion=product.presentacion,precio_unitario=product.precio_catalogo,precio_academico_unitario=product.precio_catalogo,cantidad=qty,subtotal=product.precio_catalogo*qty)
     HistorialPedido.objects.create(pedido=order,estado_anterior="",estado_nuevo="pendiente_pago",usuario=user,comentario="Pedido creado; total a pagar aceptado.")
     return order
 

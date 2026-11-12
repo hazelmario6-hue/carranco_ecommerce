@@ -10,7 +10,7 @@ from apps.catalogo.models import Producto
 def detail(request):
     return render(request,"carrito/carrito.html",{"cart":summarize(request.session)})
 def payload(cart):
-    return {"ok":True,"count":cart["count"],"subtotal":str(cart["subtotal"]),"total":str(cart["total"]),"academico":str(cart["academico"])}
+    return {"ok":True,"count":cart["count"],"subtotal":str(cart["subtotal"]),"total":str(cart["total"])}
 @require_POST
 def mutate(request):
     ajax=request.content_type=="application/json"

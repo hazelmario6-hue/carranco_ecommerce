@@ -37,13 +37,13 @@ class PaymentEmailTests(TestCase):
         session={KEY:{str(self.product.pk):2}}
         return create_order(self.user,session,self.address.pk,provider,uuid.uuid4(),make_quote(self.user,summarize(session)))
     def data(self,order,status='aprobado'):
-        return {'id':'123456','reference':str(order.referencia),'amount':Decimal('4.00'),'currency':'MXN','status':status,'method':'credit_card'}
+        return {'id':'123456','reference':str(order.referencia),'amount':order.total_catalogo,'currency':'MXN','status':status,'method':'credit_card'}
     def test_approved_payment_queues_one_receipt_only(self):
         order=self.order()
         with self.captureOnCommitCallbacks(execute=True):
             for _ in range(2):confirm('mercadopago',self.data(order))
         self.assertEqual(CorreoPendiente.objects.filter(clave=f'recibo:{order.pk}').count(),1)
-        self.assertEqual(len(mail.outbox),1);self.assertIn('4.00',mail.outbox[0].body)
+        self.assertEqual(len(mail.outbox),1);self.assertIn('269.00',mail.outbox[0].body)
         self.assertIn('OPERACIÓN DE PRUEBA',mail.outbox[0].body)
         self.assertIn('no es una factura fiscal',mail.outbox[0].body)
         self.assertEqual(MovimientoInventario.objects.count(),1)
@@ -124,7 +124,7 @@ class PaymentEmailTests(TestCase):
         results={'results':[{'id':123456,'external_reference':str(order.referencia)},
                             {'id':999999,'external_reference':str(uuid.uuid4())}]}
         payment={'id':123456,'external_reference':str(order.referencia),'live_mode':False,
-                 'transaction_amount':4,'currency_id':'MXN','status':'approved','payment_type_id':'credit_card'}
+                 'transaction_amount':269,'currency_id':'MXN','status':'approved','payment_type_id':'credit_card'}
         with patch('apps.pagos.services.mercadopago.api',side_effect=[results,payment]) as api:
             self.assertEqual(mercadopago.search(order)[0]['status'],'aprobado')
         self.assertEqual(api.call_count,2)
@@ -136,11 +136,11 @@ class PaymentEmailTests(TestCase):
     def test_openpay_search_fetches_charge_from_same_order(self):
         order=self.order(provider='openpay')
         payment={'id':'ch123','order_id':str(order.referencia),'transaction_type':'charge',
-                 'amount':4,'currency':'MXN','status':'completed','method':'card'}
+                 'amount':269,'currency':'MXN','status':'completed','method':'card'}
         with patch('apps.pagos.services.openpay.api',side_effect=[[payment],payment]) as api:
             data=openpay.search(order)
         self.assertEqual(data[0]['reference'],str(order.referencia))
-        self.assertEqual(data[0]['amount'],Decimal('4'))
+        self.assertEqual(data[0]['amount'],Decimal('269'))
         self.assertEqual(api.call_count,2)
         self.assertTrue(api.call_args_list[0].kwargs['expect_list'])
     @override_settings(MP_TEST_BUYER_EMAIL='buyer@testuser.com')
@@ -149,7 +149,22 @@ class PaymentEmailTests(TestCase):
         with patch('apps.pagos.services.mercadopago.account'),patch('apps.pagos.services.mercadopago.api',return_value={'id':'pref1','sandbox_init_point':'https://sandbox.mercadopago.com.mx/checkout/1'}) as api:
             mercadopago.create(order)
         self.assertEqual(api.call_args.kwargs['payload']['payer']['email'],'buyer@testuser.com')
+        self.assertEqual(api.call_args.kwargs['payload']['items'][0]['unit_price'],order.total_catalogo)
         self.assertEqual(order.correo_cliente,'customer@example.test')
+    @override_settings(OPENPAY_MERCHANT_ID='m12345678901234567890',OPENPAY_PRIVATE_KEY='test-private')
+    def test_openpay_charges_catalog_total_including_shipping(self):
+        order=self.order(provider='openpay')
+        with patch('apps.pagos.services.openpay.api',return_value={'id':'ch123','payment_method':{'url':'https://sandbox-api.openpay.mx/checkout'}}) as api:
+            openpay.create(order)
+        self.assertEqual(api.call_args.kwargs['payload']['amount'],order.total_catalogo)
+        self.assertEqual(order.total_catalogo,Decimal('269.00'))
+    def test_old_symbolic_order_cannot_start_new_payment(self):
+        order=self.order()
+        order.total_academico=Decimal('4.00');order.save(update_fields=['total_academico'])
+        with patch('apps.pagos.services.mercadopago.create') as create:
+            with self.assertRaisesMessage(ValidationError,'Crea uno nuevo'):
+                start(order.pk,self.user)
+        create.assert_not_called()
     @override_settings(PAYMENTS_LIVE=True)
     def test_production_rejects_test_credentials(self):
         with patch('apps.pagos.services.mercadopago.api',return_value={'tags':['test_user']}):

@@ -1,3 +1,5 @@
+> Actualización de pagos: consulta [README_PRECIO_COMPLETO_2026-11-11.md](README_PRECIO_COMPLETO_2026-11-11.md). Los pedidos nuevos cobran el precio de catálogo más envío; las indicaciones antiguas sobre cobros reducidos no aplican.
+>
 > Actualización 2026-11-11: consulta [README_ACTUALIZACION_2026-11-11.md](README_ACTUALIZACION_2026-11-11.md). El registro actual usa PIN en la misma pantalla y el remitente usa servicioslnformaticos.it.com.
 
 # Carranco: verificación por correo, recibos y pasarelas
@@ -125,8 +127,6 @@ Se utiliza Checkout Pro / API de Preferences, con captura de tarjeta en la panta
 | `MP_ACCESS_TOKEN` | Credencial del vendedor de prueba |
 | `MP_WEBHOOK_SECRET` | Clave de firma del webhook de esa aplicación |
 | `MP_TEST_BUYER_EMAIL` | Correo del comprador de prueba, si corresponde |
-| `ACADEMIC_CHARGE_AMOUNT` | Vacío para usar precios académicos por producto, o un importe fijo explícito admitido por tu cuenta y dentro del límite |
-| `ACADEMIC_MAX_CHARGE` | Conserva `100.00` |
 
 Consulta desde el contenedor, después de configurar las variables:
 
@@ -175,7 +175,7 @@ Carranco envía el recibo cuando confirma el pedido. Se deja `send_email=false` 
 4. Completa perfil y dirección. Agrega productos: comprueba el contador del carrito y las cantidades.
 5. Elige una pasarela configurada, acepta el resumen e importe, crea el pedido pendiente y pulsa Pagar. Prueba una pasarela por vez.
 6. Comprueba un pago aprobado y otro rechazado. Solo el aprobado debe completar el pedido, descontar stock una vez y generar un recibo.
-7. Verifica que el importe confirmado del recibo coincide con el de la pasarela. El total de catálogo puede ser distinto porque se conserva el modo académico de importes reducidos.
+7. Verifica que el importe confirmado del recibo coincide con el de la pasarela. En pedidos nuevos, el importe confirmado debe coincidir con el total de catálogo más envío mostrado en checkout.
 8. Reenvía la notificación desde el proveedor o vuelve a consultar: el pedido no debe descontar stock ni enviar un segundo recibo.
 9. Comprueba que el recibo solo se puede abrir con la cuenta propietaria y que una cuenta distinta recibe 404.
 10. Confirma la entrega del correo de recibo en la bandeja o en spam y revisa su estado en Resend.
@@ -184,9 +184,9 @@ En caso de timeout al iniciar el pago, el intento se conserva para revisión y s
 
 ## 7. Cobros reales, cuando ambas pruebas hayan terminado
 
-Esta entrega conserva el alcance académico y el límite de importe ya existentes. No cambia a ventas por el precio completo del catálogo.
+Los pedidos **nuevos** cobran el total de catálogo más envío. Los pedidos históricos conservan su importe anterior. Consulta [README_PRECIO_COMPLETO_2026-11-11.md](README_PRECIO_COMPLETO_2026-11-11.md).
 
-Para activar dinero real, usa credenciales productivas del vendedor, firma webhook del entorno correspondiente, `PAYMENTS_LIVE=True`, `DEBUG=False`, HTTPS y `ACADEMIC_MODE=True`. Para Openpay usa también `OPENPAY_PRODUCTION=True` y sus credenciales productivas. Conserva un importe académico explícito, visible y dentro de `ACADEMIC_MAX_CHARGE`.
+Para activar dinero real, usa credenciales productivas del vendedor, firma webhook del entorno correspondiente, `PAYMENTS_LIVE=True`, `DEBUG=False` y HTTPS. Para Openpay usa también `OPENPAY_PRODUCTION=True` y sus credenciales productivas.
 
 `PAYMENTS_LIVE` afecta a las dos pasarelas: no mezcles Mercado Pago productivo con Openpay sandbox en ese despliegue. Deshabilita la pasarela cuyas variables no estén listas. No reutilices pedidos/intentos de prueba para producción; utiliza pedidos nuevos. Deja vacío `MP_TEST_BUYER_EMAIL` en producción. No elimines la validación de entorno o importe para hacer pasar un pago.
 

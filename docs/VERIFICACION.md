@@ -1,5 +1,7 @@
 # Verificación de la entrega Django
 
+> Los pasos históricos sobre importe académico reducido fueron reemplazados por [README_PRECIO_COMPLETO_2026-11-11.md](../README_PRECIO_COMPLETO_2026-11-11.md).
+
 PROYECTO ACADÉMICO · SITIO NO OFICIAL
 
 ## Resultado comprobado

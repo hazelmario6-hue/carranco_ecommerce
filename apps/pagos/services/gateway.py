@@ -19,6 +19,8 @@ def start(order_id,user,ip=""):
     with transaction.atomic():
         order=Pedido.objects.select_for_update().select_related("usuario").get(pk=order_id,usuario=user)
         if not configured(order.metodo_pago): raise ValidationError("El pago no está disponible. Tu pedido permanece pendiente.")
+        if order.total_academico!=order.total_catalogo:
+            raise ValidationError("Este pedido conserva un importe anterior. Crea uno nuevo con el precio completo.")
         if order.estado!="pendiente_pago" or order.estado_pago=="revision" or order.inventario_descontado_at or not order.reserva_activa or order.reserva_expira_at<=timezone.now():
             raise ValidationError("Este pedido ya no admite iniciar un pago. Revisa su estado.")
         attempt,_=IntentoPago.objects.get_or_create(pedido=order,defaults={"proveedor":order.metodo_pago,"en_vivo":settings.PAYMENTS_LIVE})

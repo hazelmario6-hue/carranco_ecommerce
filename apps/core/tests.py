@@ -127,7 +127,7 @@ class CommerceTests(TestCase):
         self.assertEqual(response.json()["warnings"],[])
     def test_20_checkout_server_totals(self):
         order=self.order(2)
-        self.assertEqual(order.subtotal_catalogo,Decimal("190.00"));self.assertEqual(order.total_catalogo,Decimal("269.00"));self.assertEqual(order.total_academico,Decimal("4.00"))
+        self.assertEqual(order.subtotal_catalogo,Decimal("190.00"));self.assertEqual(order.envio,Decimal("79.00"));self.assertEqual(order.total_catalogo,Decimal("269.00"));self.assertEqual(order.total_academico,Decimal("269.00"))
         self.product.refresh_from_db();self.assertEqual(self.product.stock,20);self.assertEqual(self.product.stock_reservado,2)
     def test_21_checkout_idempotency(self):
         key=uuid.uuid4();a=self.order(key=key);b=self.order(key=key)
@@ -136,7 +136,7 @@ class CommerceTests(TestCase):
         session={KEY:{str(self.product.pk):1}}
         with self.assertRaises(ValidationError):create_order(self.user,session,self.foreign_address.pk,"mercadopago",uuid.uuid4(),make_quote(self.user,summarize(session)))
     def test_23_price_change_requires_new_consent(self):
-        session={KEY:{str(self.product.pk):1}};quote=make_quote(self.user,summarize(session));self.product.precio_academico=Decimal("3.00");self.product.save()
+        session={KEY:{str(self.product.pk):1}};quote=make_quote(self.user,summarize(session));self.product.precio_catalogo=Decimal("96.00");self.product.save()
         with self.assertRaises(ValidationError):self.order(qty=1,session=session,quote=quote)
     @override_settings(MP_ACCESS_TOKEN="TEST-local-fixture",MP_WEBHOOK_SECRET="test-secret",APP_URL="https://carranco.example.test")
     def test_24_checkout_form_and_consent(self):
@@ -145,7 +145,7 @@ class CommerceTests(TestCase):
         data={"direccion":self.address.pk,"proveedor":"mercadopago","clave":initial["clave"],"resumen":initial["resumen"],"total":0,"precio":0}
         self.client.post("/checkout/",data);self.assertEqual(Pedido.objects.count(),0)
         data["aceptar"]="on";response=self.client.post("/checkout/",data)
-        order=Pedido.objects.get();self.assertEqual(order.total_academico,Decimal("4.00"));self.assertEqual(response.status_code,302)
+        order=Pedido.objects.get();self.assertEqual(order.total_academico,Decimal("269.00"));self.assertEqual(response.status_code,302)
     def test_25_confirmation_browser_cannot_approve(self):
         order=self.order();self.login();response=self.client.get(f"/mis-pedidos/{order.numero}/confirmacion/?status=approved&payment_id=123")
         self.assertContains(response,"Todavía no hay un pago aprobado");order.refresh_from_db();self.assertEqual(order.estado_pago,"pendiente")
@@ -237,7 +237,7 @@ class CommerceTests(TestCase):
         order=self.order()
         with patch("apps.pagos.services.mercadopago.api",side_effect=[{"id":123,"tags":["test_user"]},{"id":"pref","sandbox_init_point":"https://www.mercadopago.com.mx/checkout/test"}]) as api:
             mercadopago.create(order)
-            payload=api.call_args.kwargs["payload"];self.assertEqual(payload["items"][0]["unit_price"],Decimal("4.00"));self.assertNotIn("card",payload)
+            payload=api.call_args.kwargs["payload"];self.assertEqual(payload["items"][0]["unit_price"],Decimal("269.00"));self.assertNotIn("card",payload)
     @override_settings(OPENPAY_MERCHANT_ID="m12345678901234567890",OPENPAY_PRIVATE_KEY="test-private",OPENPAY_WEBHOOK_USER="webhook",OPENPAY_WEBHOOK_PASSWORD="unique-test-password",APP_URL="https://carranco.example.test")
     def test_48_openpay_confirmation_once(self):
         order=self.order(provider="openpay");confirm("openpay",self.verified(order,identifier="charge123"));confirm("openpay",self.verified(order,identifier="charge123"));self.product.refresh_from_db();self.assertEqual(self.product.stock,18)
@@ -258,12 +258,12 @@ class CommerceTests(TestCase):
         self.assertEqual(self.client.get("/dashboard/productos/").status_code,200);self.assertEqual(self.client.get(f"/dashboard/productos/{self.product.pk}/").status_code,403)
     def test_53_product_create_edit_deactivate(self):
         self.client.force_login(self.staff)
-        data={"sku":"CARR-NUEVO","nombre":"Queso de prueba","slug":"queso-prueba","legacy_id":"prueba","categoria":self.product.categoria_id,"descripcion":"Producto para validar el CRUD","presentacion":"400 g","precio_catalogo":"80.00","precio_academico":"2.00","activo":"on","en_catalogo":"on"}
+        data={"sku":"CARR-NUEVO","nombre":"Queso de prueba","slug":"queso-prueba","legacy_id":"prueba","categoria":self.product.categoria_id,"descripcion":"Producto para validar el CRUD","presentacion":"400 g","precio_catalogo":"80.00","activo":"on","en_catalogo":"on"}
         response=self.client.post("/dashboard/productos/nuevo/",data)
         self.assertRedirects(response,"/dashboard/productos/")
-        product=Producto.objects.get(sku="CARR-NUEVO");self.assertEqual(product.stock,0)
+        product=Producto.objects.get(sku="CARR-NUEVO");self.assertEqual(product.stock,0);self.assertEqual(product.precio_academico,Decimal("80.00"))
         data["precio_catalogo"]="95.50";data.pop("activo");response=self.client.post(f"/dashboard/productos/{product.pk}/",data)
-        self.assertRedirects(response,"/dashboard/productos/");product.refresh_from_db();self.assertEqual(product.precio_catalogo,Decimal("95.50"));self.assertFalse(product.activo)
+        self.assertRedirects(response,"/dashboard/productos/");product.refresh_from_db();self.assertEqual(product.precio_catalogo,Decimal("95.50"));self.assertEqual(product.precio_academico,Decimal("95.50"));self.assertFalse(product.activo)
     def test_54_remove_inactive_cart_item(self):
         session=self.client.session;change(session,self.product.pk,1,"add")
         self.product.activo=False;self.product.save()
@@ -283,7 +283,7 @@ class CommerceTests(TestCase):
         order=self.order(provider="openpay")
         with patch("apps.pagos.services.openpay.api",return_value={"id":"charge-test","payment_method":{"url":"https://sandbox-api.openpay.mx/checkout/test"}}) as api:
             openpay.create(order,"127.0.0.1");data=api.call_args.kwargs["payload"]
-            self.assertIs(data["confirm"],False);self.assertEqual(data["amount"],Decimal("4.00"));self.assertNotIn("card",data);self.assertNotIn("cvv",data)
+            self.assertIs(data["confirm"],False);self.assertEqual(data["amount"],Decimal("269.00"));self.assertNotIn("card",data);self.assertNotIn("cvv",data)
     def test_58_bad_csrf_logout(self):
         client=Client(enforce_csrf_checks=True);client.force_login(self.user)
         self.assertEqual(client.post("/cuenta/logout/").status_code,403)

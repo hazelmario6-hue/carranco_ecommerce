@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from decimal import Decimal, InvalidOperation
 
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
@@ -143,26 +142,6 @@ if flag("TRUST_PROXY_HTTPS"):
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024
 
 ACADEMIC_MODE = flag("ACADEMIC_MODE", True)
-try:
-    ACADEMIC_CHARGE_AMOUNT = (
-        Decimal(os.environ["ACADEMIC_CHARGE_AMOUNT"])
-        if os.getenv("ACADEMIC_CHARGE_AMOUNT")
-        else None
-    )
-    ACADEMIC_MAX_CHARGE = Decimal(os.getenv("ACADEMIC_MAX_CHARGE", "100.00"))
-except InvalidOperation:
-    raise ImproperlyConfigured("Configura importes académicos numéricos en .env.")
-
-if (
-    ACADEMIC_CHARGE_AMOUNT is not None
-    and (
-        not ACADEMIC_CHARGE_AMOUNT.is_finite()
-        or ACADEMIC_CHARGE_AMOUNT <= 0
-        or ACADEMIC_CHARGE_AMOUNT
-        != ACADEMIC_CHARGE_AMOUNT.quantize(Decimal("0.01"))
-    )
-) or not ACADEMIC_MAX_CHARGE.is_finite() or ACADEMIC_MAX_CHARGE <= 0:
-    raise ImproperlyConfigured("Los importes académicos deben ser positivos y finitos.")
 
 STOCK_LOW_THRESHOLD = int(os.getenv("STOCK_LOW_THRESHOLD", "5"))
 RESERVATION_MINUTES = int(os.getenv("RESERVATION_MINUTES", "30"))
@@ -182,10 +161,6 @@ OPENPAY_WEBHOOK_PASSWORD = os.getenv("OPENPAY_WEBHOOK_PASSWORD", "")
 if (not DEBUG or PAYMENTS_LIVE) and not APP_URL.startswith("https://"):
     raise ImproperlyConfigured(
         "La producción y los cobros reales requieren APP_URL HTTPS."
-    )
-if PAYMENTS_LIVE and not ACADEMIC_MODE:
-    raise ImproperlyConfigured(
-        "Este proyecto habilita cobros únicamente en ACADEMIC_MODE."
     )
 if PAYMENTS_LIVE and DEBUG:
     raise ImproperlyConfigured("Para cobros reales configura DEBUG=False y HTTPS.")

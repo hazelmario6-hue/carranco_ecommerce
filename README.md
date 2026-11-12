@@ -1,3 +1,5 @@
+> Actualización de pagos: consulta [README_PRECIO_COMPLETO_2026-11-11.md](README_PRECIO_COMPLETO_2026-11-11.md). Los pedidos nuevos cobran el precio de catálogo más envío; las explicaciones antiguas sobre importes reducidos y el límite de $100 MXN ya no aplican.
+>
 > Actualización 2026-11-11: consulta [README_ACTUALIZACION_2026-11-11.md](README_ACTUALIZACION_2026-11-11.md). El registro actual usa PIN en la misma pantalla y el remitente usa servicioslnformaticos.it.com.
 
 # Quesos Carranco — e-commerce académico con Django y MySQL
@@ -108,8 +110,6 @@ ALLOWED_HOSTS=localhost,127.0.0.1
 CSRF_TRUSTED_ORIGINS=http://localhost:8000,http://127.0.0.1:8000
 APP_URL=http://localhost:8000
 ACADEMIC_MODE=True
-ACADEMIC_CHARGE_AMOUNT=
-ACADEMIC_MAX_CHARGE=100.00
 PAYMENTS_LIVE=False
 ```
 
@@ -169,7 +169,7 @@ Mantén la consola abierta. Ctrl+C detiene el servidor. En próximas ejecuciones
 1. Registra una cuenta de cliente.
 2. Guarda una dirección desde Mi cuenta.
 3. Agrega productos y prueba cantidades, eliminación y vaciado.
-4. En checkout revisa los dos importes y acepta el aviso académico.
+4. En checkout revisa el subtotal, el envío y el total completo antes de aceptarlo.
 5. Crea un pedido pendiente. Su stock queda reservado, no vendido.
 6. Consulta Mis pedidos y su seguimiento.
 7. Cancela un pedido pendiente y comprueba que la reserva se libera.
@@ -179,11 +179,9 @@ Sin credenciales y webhook HTTPS, la web no muestra un botón que finja cobrar. 
 
 ## Precios y consentimiento
 
-`precio_catalogo` se utiliza para el total comercial, con envío ilustrativo de $79.00, gratuito desde $500.00. Ese envío no se añade al cobro académico.
+`precio_catalogo` determina el subtotal del pedido. Se añade $79.00 MXN de envío si el subtotal es inferior a $500.00 MXN; a partir de $500.00 MXN el envío es gratis. El total mostrado y aceptado en checkout es exactamente el que se envía a la pasarela. Las columnas de base de datos con nombre `academico` se conservan para pedidos anteriores, pero no alteran el importe de pedidos nuevos. Consulta [README_PRECIO_COMPLETO_2026-11-11.md](README_PRECIO_COMPLETO_2026-11-11.md).
 
-Con `ACADEMIC_CHARGE_AMOUNT` vacío, el cobro académico suma `precio_academico` por unidad. El seed conserva $2.00 por unidad de la entrega anterior. Puedes configurar un importe fijo con `ACADEMIC_CHARGE_AMOUNT`, por ejemplo `10.00`; el checkout lo muestra antes de aceptarlo. El límite `ACADEMIC_MAX_CHARGE` evita operaciones superiores al monto configurado. Comprueba los mínimos que admite tu cuenta de pasarela: el código nunca aumenta silenciosamente el importe para cumplirlos.
-
-El resumen está firmado, dura 15 minutos y depende del usuario, SKU, cantidades y precios. La aceptación se registra en el pedido. No se toman precios ni totales del frontend.
+El resumen está firmado, dura 15 minutos y depende del usuario, los productos, cantidades y precios. La aceptación se registra en el pedido. No se toman precios ni totales del frontend.
 
 ## Mercado Pago
 
@@ -210,13 +208,9 @@ Se usa Checkout Pro mediante la API REST oficial. No se necesita Public Key porq
 
 El código consulta `/users/me` al crear la preferencia y evita utilizar credenciales de vendedor real mientras `PAYMENTS_LIVE=False`, salvo credenciales TEST del proveedor. Para las cuentas de prueba con Access Token APP_USR exige la etiqueta `test_user`. Al consultar un pago verifica que `live_mode` corresponda al entorno.
 
-### Cobros reales reducidos
+### Cobros reales al precio completo
 
-Cuando la integración externa haya pasado sus pruebas y tu cuenta admita el método, configura credenciales productivas, `PAYMENTS_LIVE=True`, `DEBUG=False` y HTTPS. Las cookies serán Secure y se exigirá HTTPS. Conserva `ACADEMIC_MODE=True`, el importe reducido, el límite de cobro y el consentimiento visible. El código rechaza cobros reales con DEBUG activado.
-
-Si HTTPS termina en un proxy de confianza, configura `TRUST_PROXY_HTTPS=True` únicamente cuando ese proxy elimine o reescriba `X-Forwarded-Proto` y el backend no sea accesible directamente. De lo contrario usa False y HTTPS hasta la aplicación. Para un despliegue compartido utiliza un servidor WSGI/ASGI y configura static/media; `runserver` corresponde a desarrollo.
-
-No se efectuó ningún cargo real durante la construcción del proyecto. La prueba con tus cuentas es un paso pendiente y no puede reemplazarse con los tests locales.
+Para activar dinero real usa credenciales productivas, webhooks productivos, `PAYMENTS_LIVE=True`, `DEBUG=False` y HTTPS. La pasarela cobra el precio de catálogo más envío de cada pedido **nuevo**. Consulta [README_PRECIO_COMPLETO_2026-11-11.md](README_PRECIO_COMPLETO_2026-11-11.md) y verifica el despliegue antes de aceptar un pago real.
 
 ## Openpay México
 
@@ -325,7 +319,7 @@ Los tres CSS generales se compararon byte a byte con la tercera entrega; son id�
 | Firma webhook inválida | Revisa la clave de la aplicación y la URL con data.id; sincroniza el reloj |
 | Redirección HTTPS repetida | Revisa el proxy y TRUST_PROXY_HTTPS; no lo habilites sin un proxy de confianza |
 | Perfil/dirección incompletos | Edita Mi cuenta y guarda la dirección antes de checkout |
-| Importe mínimo de pasarela | Configura explícitamente el importe académico y vuelve a aceptar el resumen |
+| Importe mínimo de pasarela | Consulta los mínimos de la pasarela sin modificar silenciosamente el total; ajusta los precios de catálogo solo si corresponde |
 
 ## Referencias oficiales
 

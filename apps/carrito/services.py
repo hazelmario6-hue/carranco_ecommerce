@@ -1,5 +1,4 @@
 from decimal import Decimal
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from apps.catalogo.models import Producto
 KEY="carranco_cart"
@@ -16,16 +15,14 @@ def summarize(session):
     products=Producto.objects.select_related("categoria").filter(pk__in=cart)
     lines=[]
     subtotal=Decimal("0.00")
-    academic=Decimal("0.00")
     for product in products:
         quantity=cart[str(product.pk)]
         line_total=product.precio_catalogo*quantity
         subtotal+=line_total
-        academic+=product.precio_academico*quantity
         lines.append({"producto":product,"cantidad":quantity,"subtotal":line_total,"valido":product.activo and product.stock_disponible>=quantity})
     shipping=Decimal("0.00") if subtotal==0 or subtotal>=500 else Decimal("79.00")
-    academic=settings.ACADEMIC_CHARGE_AMOUNT if settings.ACADEMIC_CHARGE_AMOUNT is not None and lines else academic
-    return {"items":lines,"count":sum(cart.values()),"subtotal":subtotal,"envio":shipping,"total":subtotal+shipping,"academico":academic,"valido":bool(lines) and len(lines)==len(cart) and all(line["valido"] for line in lines)}
+    total=subtotal+shipping
+    return {"items":lines,"count":sum(cart.values()),"subtotal":subtotal,"envio":shipping,"total":total,"valido":bool(lines) and len(lines)==len(cart) and all(line["valido"] for line in lines)}
 
 def change(session,product_id,quantity,operation="set"):
     if type(quantity) is not int or quantity<0 or quantity>MAX_QUANTITY:
