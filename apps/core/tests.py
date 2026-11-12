@@ -139,12 +139,14 @@ class CommerceTests(TestCase):
         session={KEY:{str(self.product.pk):1}};quote=make_quote(self.user,summarize(session));self.product.precio_catalogo=Decimal("96.00");self.product.save()
         with self.assertRaises(ValidationError):self.order(qty=1,session=session,quote=quote)
     @override_settings(MP_ACCESS_TOKEN="TEST-local-fixture",MP_WEBHOOK_SECRET="test-secret",APP_URL="https://carranco.example.test")
-    def test_24_checkout_form_and_consent(self):
+    def test_24_checkout_form_requires_provider_without_checkbox(self):
         self.login();session=self.client.session;session[KEY]={str(self.product.pk):2};session.save()
         response=self.client.get("/checkout/");initial=response.context["form"].initial
-        data={"direccion":self.address.pk,"proveedor":"mercadopago","clave":initial["clave"],"resumen":initial["resumen"],"total":0,"precio":0}
+        self.assertEqual(response.context["form"].fields["proveedor"].initial,"mercadopago")
+        self.assertNotIn('name="aceptar"',response.content.decode())
+        data={"direccion":self.address.pk,"clave":initial["clave"],"resumen":initial["resumen"],"total":0,"precio":0}
         self.client.post("/checkout/",data);self.assertEqual(Pedido.objects.count(),0)
-        data["aceptar"]="on";response=self.client.post("/checkout/",data)
+        data["proveedor"]="mercadopago";response=self.client.post("/checkout/",data)
         order=Pedido.objects.get();self.assertEqual(order.total_academico,Decimal("269.00"));self.assertEqual(response.status_code,302)
     def test_25_confirmation_browser_cannot_approve(self):
         order=self.order();self.login();response=self.client.get(f"/mis-pedidos/{order.numero}/confirmacion/?status=approved&payment_id=123")

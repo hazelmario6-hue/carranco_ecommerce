@@ -21,6 +21,10 @@ class Command(BaseCommand):
         for provider in ['mercadopago','openpay']:
             ready=configured(provider)
             self.stdout.write(provider+': '+('variables presentes' if ready else 'FALTAN variables o entorno incompatible'))
+            if provider=='mercadopago' and not ready:
+                missing=[name for name,value in [('MP_ACCESS_TOKEN',settings.MP_ACCESS_TOKEN),('MP_WEBHOOK_SECRET',settings.MP_WEBHOOK_SECRET)] if not value]
+                if origin.scheme!='https' or not origin.hostname:missing.append('APP_URL HTTPS')
+                self.stdout.write('  Revisa: '+(', '.join(missing) if missing else 'entorno de pago'))
             if ready and options['remote']:
                 try:
                     if provider=='mercadopago':mercadopago.account()

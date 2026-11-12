@@ -93,8 +93,10 @@ class PaymentEmailTests(TestCase):
         with override_settings(MP_ACCESS_TOKEN='',OPENPAY_PRIVATE_KEY=''):
             response=self.client.get('/checkout/')
             self.assertEqual(response.context['form'].fields['proveedor'].choices,[])
+            self.assertNotContains(response,'<select name="proveedor"')
+            self.assertContains(response,'no hay métodos de pago disponibles')
             initial=response.context['form'].initial
-            response=self.client.post('/checkout/',{'direccion':self.address.pk,'proveedor':'mercadopago','aceptar':'on',**initial})
+            response=self.client.post('/checkout/',{'direccion':self.address.pk,'proveedor':'mercadopago',**initial})
             self.assertEqual(response.status_code,200);self.assertEqual(Pedido.objects.count(),0)
     def test_unverified_cannot_create_or_start_payment(self):
         order=self.order();VerificacionCorreo.objects.all().delete()
