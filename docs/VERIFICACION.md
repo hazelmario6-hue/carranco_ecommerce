@@ -1,3 +1,5 @@
+> Registro histórico de una entrega anterior. La comprobación actual está en VERIFICACION_2026-11-20.md.
+
 # Verificación de la entrega Django
 
 > Los pasos históricos sobre importe académico reducido fueron reemplazados por [README_PRECIO_COMPLETO_2026-11-11.md](../README_PRECIO_COMPLETO_2026-11-11.md).
@@ -23,7 +25,6 @@ Los tres CSS generales se compararon mediante SHA-256 con los de la entrega 3 y 
 - Probar menú móvil, filtros dinámicos, galería, cantidades, toast y transferencia desde localStorage en un navegador real.
 - Probar carga de una foto desde Inventario/Productos y verificar su servido desde media.
 - Configurar credenciales de prueba, HTTPS, cuentas comprador/vendedor y webhook de Mercado Pago. Comprobar aprobado, pendiente y rechazado externos.
-- Tras esa prueba, configurar Openpay y verificar su webhook/formulario alojado con la cuenta habilitada.
 - Si se desean cobros reales, hacerlos únicamente tras la prueba externa y el consentimiento explícito del importe reducido con DEBUG=False, HTTPS y PAYMENTS_LIVE=True.
 
 ## Prueba manual recomendada

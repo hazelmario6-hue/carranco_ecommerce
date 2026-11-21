@@ -21,4 +21,6 @@ class Command(BaseCommand):
             data["precio_academico"]=Decimal(str(data["precio_academico"]))
             _,nuevo=Producto.objects.get_or_create(sku=sku,defaults=data)
             creados+=int(nuevo)
+        from apps.core.promociones import ensure_initial_promotion
+        ensure_initial_promotion()
         self.stdout.write(self.style.SUCCESS(f"{creados} SKU nuevos; los productos anteriores se conservan."))

@@ -42,12 +42,14 @@ class AppModeTests(TestCase):
         self.assertNotContains(self.app_client().get('/'), 'footer-disclosure')
         self.assertIn('Proyecto académico universitario', render_to_string('base.html', {'footer_only': True}))
 
-    def test_preview_persists_and_can_be_reset(self):
-        response = self.client.get('/?modo=app')
-        self.assertTrue(response.cookies['carranco_app_preview']['httponly'])
-        self.assertContains(self.client.get('/productos/'), 'class="app-bottom-nav"')
-        self.client.get('/?modo=web')
-        self.assertNotContains(self.client.get('/'), 'class="app-bottom-nav"')
+    def test_preview_only_affects_current_request_and_clears_old_cookie(self):
+        self.client.cookies["carranco_app_preview"] = "1"
+        self.assertNotContains(self.client.get("/"), 'class="app-bottom-nav"')
+        response = self.client.get("/?modo=app")
+        self.assertContains(response, 'class="app-bottom-nav"')
+        self.assertIn("no-store", response["Cache-Control"])
+        self.assertNotContains(self.client.get("/productos/"), 'class="app-bottom-nav"')
+        self.assertNotContains(self.app_client().get("/?modo=web"), 'class="app-bottom-nav"')
 
     def test_app_marker_does_not_grant_dashboard_access(self):
         response = self.app_client().get('/dashboard/')

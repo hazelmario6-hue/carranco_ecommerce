@@ -19,7 +19,7 @@ def summarize(session):
         quantity=cart[str(product.pk)]
         line_total=product.precio_catalogo*quantity
         subtotal+=line_total
-        lines.append({"producto":product,"cantidad":quantity,"subtotal":line_total,"valido":product.activo and product.stock_disponible>=quantity})
+        lines.append({"producto":product,"cantidad":quantity,"subtotal":line_total,"maximo":min(MAX_QUANTITY,product.stock_disponible) if product.activo else 0,"valido":product.activo and product.stock_disponible>=quantity})
     shipping=Decimal("0.00") if subtotal==0 or subtotal>=500 else Decimal("79.00")
     total=subtotal+shipping
     return {"items":lines,"count":sum(cart.values()),"subtotal":subtotal,"envio":shipping,"total":total,"valido":bool(lines) and len(lines)==len(cart) and all(line["valido"] for line in lines)}
@@ -42,3 +42,24 @@ def change(session,product_id,quantity,operation="set"):
     session[KEY]=cart
     session.modified=True
     return summarize(session)
+
+
+def reconcile(session):
+    """Clamp a displayed cart to current stock; checkout still validates under row locks."""
+    cart = summarize(session)
+    adjusted = {}
+    warnings = []
+    for line in cart["items"]:
+        product = line["producto"]
+        quantity = min(line["cantidad"], line["maximo"])
+        if quantity:
+            adjusted[str(product.pk)] = quantity
+        if quantity != line["cantidad"]:
+            warnings.append(f"{product.nombre}: cantidad ajustada a {quantity} por disponibilidad.")
+    if adjusted != items(session):
+        session[KEY] = adjusted
+        if hasattr(session, "modified"):
+            session.modified = True
+    result = summarize(session)
+    result["warnings"] = warnings
+    return result

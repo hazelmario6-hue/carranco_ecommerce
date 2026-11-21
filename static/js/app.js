@@ -20,3 +20,18 @@
   drawer.addEventListener("click",e=>{if(e.target===drawer){const r=drawer.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)drawer.close();}});
   drawer.addEventListener("close",()=>{opener.setAttribute("aria-expanded","false");document.body.classList.remove("modal-open");opener.focus();});
 })();
+
+(() => {
+  const nav = document.querySelector(".app-bottom-nav"), header = document.querySelector(".app-header");
+  function measure() {
+    if (nav && nav.getBoundingClientRect().height) document.body.style.setProperty("--app-nav-space", `${Math.ceil(nav.getBoundingClientRect().height) + 12}px`);
+    if (header) document.documentElement.style.scrollPaddingTop = `${Math.ceil(header.getBoundingClientRect().height) + 16}px`;
+  }
+  if (window.ResizeObserver) {
+    const observer = new ResizeObserver(measure);
+    if (nav) observer.observe(nav);
+    if (header) observer.observe(header);
+  }
+  window.addEventListener("resize", measure);
+  measure();
+})();

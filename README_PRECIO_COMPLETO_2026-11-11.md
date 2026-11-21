@@ -1,6 +1,6 @@
 # Carranco · cobro del precio completo
 
-Este cambio parte del commit `06fc0f8` ya desplegado. Los pedidos **nuevos** cobran el mismo total visible en carrito y checkout: suma de `precio_catalogo × cantidad` más envío. El envío es $79 MXN cuando el subtotal es menor de $500 MXN y gratis desde $500 MXN. Ejemplo: dos unidades de $95 → $190 + $79 = **$269 MXN** tanto en Mercado Pago como en Openpay.
+Este cambio parte del commit `06fc0f8` ya desplegado. Los pedidos **nuevos** cobran el mismo total visible en carrito y checkout: suma de `precio_catalogo × cantidad` más envío. El envío es $79 MXN cuando el subtotal es menor de $500 MXN y gratis desde $500 MXN. Ejemplo: dos unidades de $95 → $190 + $79 = **$269 MXN** en Mercado Pago.
 
 El nombre de columna `total_academico` se conserva por compatibilidad con la base y los pedidos anteriores; para pedidos nuevos almacena el total completo. Los pedidos anteriores cuyo importe reducido difiere del total del catálogo no pueden iniciar otro pago: crea un pedido nuevo. Los registros históricos y sus recibos conservan el importe realmente cobrado. El campo legado `precio_academico` permanece en la base; el panel ya solo edita el precio de venta y sincroniza ambos valores al guardar. No se necesitan migraciones para esta actualización.
 
@@ -22,6 +22,4 @@ El nombre de columna `total_academico` se conserva por compatibilidad con la bas
 
 En checkout ya no hay casilla de autorización: el botón muestra el total antes de crear el pedido, y el cobro se inicia desde el pedido pendiente. Si no aparece Mercado Pago como método, ejecuta `check_integrations --remote` en Railway. El diagnóstico indicará si faltan `MP_ACCESS_TOKEN`, `MP_WEBHOOK_SECRET` o un `APP_URL` HTTPS; guarda las variables en el servicio Django y espera a que termine el despliegue. No incluyas claves en capturas ni mensajes.
 
-Openpay requiere que la cuenta y las credenciales productivas hayan sido aprobadas por Openpay. Configura su webhook productivo con HTTP Basic y `OPENPAY_PRODUCTION=True` solo cuando también lo vayas a activar; `PAYMENTS_LIVE` es global para ambas pasarelas. La documentación original en `README_CORREOS_Y_PAGOS.md` describe el proceso de sandbox y otras funciones, pero su explicación del importe académico reducido fue sustituida por esta guía.
-
-Esta entrega no activa variables por sí sola y no realizó transacciones reales. Revisa precios, inventario y condiciones de entrega antes de aceptar el primer cargo. El problema de que la web muestre la interfaz app se tratará por separado.
+Openpay se retiró el 20 de noviembre de 2026. No actives sus variables. Sigue GUIA_ACTUALIZACION.md para la configuración actual.

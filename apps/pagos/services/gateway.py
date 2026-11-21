@@ -8,7 +8,8 @@ from apps.pagos.models import IntentoPago
 
 def configured(provider):
     if provider=="mercadopago": return bool(settings.MP_ACCESS_TOKEN and settings.MP_WEBHOOK_SECRET and settings.APP_URL.startswith("https://"))
-    if provider=="openpay": return bool(settings.OPENPAY_MERCHANT_ID and settings.OPENPAY_PRIVATE_KEY and settings.OPENPAY_WEBHOOK_USER and settings.OPENPAY_WEBHOOK_PASSWORD and settings.OPENPAY_PRODUCTION==settings.PAYMENTS_LIVE and settings.APP_URL.startswith("https://"))
+    # Retired provider: credentials left in an environment cannot reactivate it.
+    if provider=="openpay": return False
     return False
 
 def start(order_id,user,ip=""):

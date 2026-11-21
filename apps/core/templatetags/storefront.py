@@ -11,7 +11,7 @@ def storefront_text(value):
         " La presentación seleccionada pertenece al prototipo académico.": " Consulta la presentación seleccionada.",
         "presentación simulada": "presentación seleccionada",
         "distinto al simulado": "distinto al seleccionado",
-        "Conjunto de demostración con un Ranchero y un Panela. La promoción y las presentaciones son ficticias y las fotografías son ilustrativas.": "Conjunto con un Ranchero y un Panela. Fotografías ilustrativas; consulta las presentaciones seleccionadas.",
+        "Conjunto de demostración con un Ranchero y un Panela. La promoción y las presentaciones son ficticias y las fotografías son ilustrativas.": "Conjunto con un Queso Ranchero y un Queso Panela para compartir.",
         " El conjunto y su promoción son una simulación académica.": "",
         "Oferta simulada": "Oferta",
         "Pedido creado; aviso académico aceptado.": "Pedido creado; total a pagar aceptado.",

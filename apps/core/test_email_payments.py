@@ -136,7 +136,7 @@ class PaymentEmailTests(TestCase):
             with self.assertRaises(ValidationError):mercadopago.search(order)
     @override_settings(OPENPAY_MERCHANT_ID='m12345678901234567890',OPENPAY_PRIVATE_KEY='test-private')
     def test_openpay_search_fetches_charge_from_same_order(self):
-        order=self.order(provider='openpay')
+        order=self.order();order.metodo_pago="openpay";order.save(update_fields=["metodo_pago"])
         payment={'id':'ch123','order_id':str(order.referencia),'transaction_type':'charge',
                  'amount':269,'currency':'MXN','status':'completed','method':'card'}
         with patch('apps.pagos.services.openpay.api',side_effect=[[payment],payment]) as api:
@@ -155,7 +155,7 @@ class PaymentEmailTests(TestCase):
         self.assertEqual(order.correo_cliente,'customer@example.test')
     @override_settings(OPENPAY_MERCHANT_ID='m12345678901234567890',OPENPAY_PRIVATE_KEY='test-private')
     def test_openpay_charges_catalog_total_including_shipping(self):
-        order=self.order(provider='openpay')
+        order=self.order();order.metodo_pago="openpay";order.save(update_fields=["metodo_pago"])
         with patch('apps.pagos.services.openpay.api',return_value={'id':'ch123','payment_method':{'url':'https://sandbox-api.openpay.mx/checkout'}}) as api:
             openpay.create(order)
         self.assertEqual(api.call_args.kwargs['payload']['amount'],order.total_catalogo)

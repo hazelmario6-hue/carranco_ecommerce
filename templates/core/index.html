@@ -11,7 +11,7 @@
                 </div>
                 <figure class="hero-visual">
                     <img data-photo="hero" src="https://images.unsplash.com/photo-1695606452858-39038806b143?auto=format&amp;fit=crop&amp;w=1400&amp;q=85" width="1000" height="1100" fetchpriority="high" alt="Tabla de quesos y acompañamientos para compartir" decoding="async">
-                    <figcaption class="photo-caption">EL SABOR DE ESTAR JUNTOS <small>Fotografía ilustrativa</small></figcaption>
+                    <figcaption class="photo-caption">EL SABOR DE ESTAR JUNTOS <small>Quesos y acompañamientos para compartir</small></figcaption>
                     <div class="heritage-seal" aria-hidden="true"><small>TRADICIÓN</small><span>1885</span><small>CARRANCO</small></div>
                 </figure>
             </div>
@@ -48,16 +48,11 @@
             </div>
         </section>
 
-        <section class="section container" id="ofertas" aria-labelledby="offer-title">
-            <div class="offer-panel">
-                <figure class="offer-photo"><img data-photo="offer" src="https://images.unsplash.com/photo-1695606392694-93de9b0bf320?auto=format&amp;fit=crop&amp;w=1000&amp;q=85" width="850" height="850" loading="lazy" alt="Quesos sobre una tabla listos para llevar a la mesa"><figcaption>Fotografía ilustrativa del conjunto</figcaption></figure>
-                <div class="offer-copy"><p class="eyebrow">PARA COMPARTIR</p><h2 id="offer-title">La tradición<br>sabe mejor de a dos.</h2><p>Un dúo para tus recetas favoritas: Queso Ranchero de 400 g y Queso Panela de 400 g.</p><div class="offer-price"><strong>${{ duo.precio_catalogo|floatformat:2 }} <small>MXN</small></strong><span>Una selección para compartir</span></div>{% if duo %}<form method="post" action="{% url 'carrito:actualizar' %}" class="cart-add-form">{% csrf_token %}<input type="hidden" name="producto" value="{{ duo.pk }}"><input type="hidden" name="cantidad" value="1"><input type="hidden" name="operacion" value="add"><button class="button button-gold" type="submit"{% if not duo.stock_disponible %} disabled{% endif %}>Agregar el dúo al carrito</button></form>{% else %}<p>El conjunto no está disponible.</p>{% endif %}</div>
-            </div>
-        </section>
+        {% include 'includes/promociones.html' %}
 
         <section class="section section-cream" id="tradicion" aria-labelledby="story-title">
             <div class="container story-grid">
-                <figure class="story-photo"><img data-photo="story" src="https://images.unsplash.com/photo-1665105519765-a0ec8e027100?auto=format&amp;fit=crop&amp;w=1000&amp;q=85" width="900" height="1050" loading="lazy" alt="Paisaje rural que evoca el origen de la tradición quesera"><figcaption>Imagen ilustrativa; no muestra instalaciones de Carranco.</figcaption></figure>
+                <figure class="story-photo"><img data-photo="story" src="https://images.unsplash.com/photo-1665105519765-a0ec8e027100?auto=format&amp;fit=crop&amp;w=1000&amp;q=85" width="900" height="1050" loading="lazy" alt="Paisaje rural que evoca el origen de la tradición quesera"><figcaption>Paisaje rural y tradición quesera.</figcaption></figure>
                 <div class="story-copy"><p class="eyebrow">NUESTRAS RAÍCES</p><h2 id="story-title">Potosino de origen.<br>Tradicional de corazón.</h2><p>La historia de Carranco comienza en San Luis Potosí. Desde 1885, la elaboración de quesos y mantequilla forma parte de una tradición que ha acompañado a generaciones.</p><p>El Queso Ranchero, incorporado en 1958 y reconocido por su moldeado a mano, es una de las expresiones de esa identidad.</p><div class="story-milestones"><div><strong>1885</strong><span>Inicia la elaboración</span></div><div><strong>1958</strong><span>Nace el Queso Ranchero</span></div><div><strong>Hoy</strong><span>Una tradición compartida</span></div></div><a class="button button-outline" href="{% url 'core:nosotros' %}">Conoce nuestra historia</a><small class="source-note">Referencia histórica: <a href="https://quesoscarranco.com.mx/historia/" target="_blank" rel="noopener noreferrer">sitio oficial de Carranco</a>.</small></div>
             </div>
         </section>
@@ -73,6 +68,6 @@
         </section>
 
         <section class="catalog-cta" id="contacto" aria-labelledby="cta-title">
-            <div class="container cta-grid"><div><p class="eyebrow">LLEVA LA TRADICIÓN A TU MESA</p><h2 id="cta-title">Tu próximo favorito<br>te está esperando.</h2><p>Explora nuestra selección o conoce el asistente.</p></div><div class="cta-actions"><a class="button button-gold" href="{% url 'catalogo:productos' %}">Consultar catálogo</a><button class="button button-light-outline" type="button" data-whatsapp><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Hablar con el asistente</button><p>Horario de atención:<br>L–V 9:00–18:00 · Sáb 9:00–14:00</p></div></div>
+            <div class="container cta-grid"><div><p class="eyebrow">LLEVA LA TRADICIÓN A TU MESA</p><h2 id="cta-title">Tu próximo favorito<br>te está esperando.</h2><p>Explora nuestra selección o conoce el asistente.</p></div><div class="cta-actions"><a class="button button-gold" href="{% url 'catalogo:productos' %}">Consultar catálogo</a><a class="button button-light-outline" href="{{ whatsapp_url }}"{% if not request.app_mode %} target="_blank"{% endif %} rel="noopener noreferrer" data-external><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> Hablar con el asistente</a><p>Horario de atención:<br>L–V 9:00–18:00 · Sáb 9:00–14:00</p></div></div>
         </section>
     {% endblock %}

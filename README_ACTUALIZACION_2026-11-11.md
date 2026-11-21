@@ -1,3 +1,5 @@
+> Guía histórica. La actualización vigente está en GUIA_ACTUALIZACION.md.
+
 # Carranco · identidad móvil y correo con PIN
 
 > Los importes de pago cambiaron después de esta entrega. Lee [README_PRECIO_COMPLETO_2026-11-11.md](README_PRECIO_COMPLETO_2026-11-11.md) antes de configurar las pasarelas.
@@ -96,7 +98,7 @@ Los PIN fallidos se reenvían desde el registro; no se almacenan para reintento 
 7. Revisa la cuenta: perfil, direcciones, pedidos y cerrar sesión. Acerca de contiene el aviso académico reducido.
 8. En dispositivos reales prueba teclado, pegado/autocompletado del PIN, botón atrás, menú y barra inferior. Anchos objetivo: 360, 393 y 412 px.
 
-No se modificaron credenciales ni se habilitaron cobros reales. Verificar Resend no configura Mercado Pago/Openpay: sus variables y webhooks se administran por separado.
+No se modificaron credenciales ni se habilitaron cobros reales. Verificar Resend no configura Mercado Pago: sus variables y webhooks se administran por separado.
 
 ## Validación local realizada
 

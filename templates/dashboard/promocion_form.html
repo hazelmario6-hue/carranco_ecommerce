@@ -1,0 +1,5 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Editar promoción | Carranco{% endblock %}
+{% block dashboard_content %}<h1 class="commerce-title">{% if promocion %}Editar promoción{% else %}Nueva promoción{% endif %}</h1>
+<p>Publica una selección con su precio actual. Para modificar un precio, edita el producto en el catálogo.</p>
+<div class="form-card"><form method="post">{% csrf_token %}{% include "includes/form.html" %}<button class="button button-navy" type="submit">Guardar promoción</button> <a class="back-link" href="{% url 'dashboard:promociones' %}">Volver</a></form></div>{% endblock %}

@@ -16,6 +16,12 @@ from django.conf import settings
 class Acceso(LoginView):
     template_name="cuentas/login.html"
     authentication_form=AccesoForm
+    def get_success_url(self):
+        if self.request.user.is_active and self.request.user.is_staff:
+            from django.urls import reverse
+            return reverse("dashboard:inicio")
+        return super().get_success_url()
+
     def form_valid(self,form):
         if getattr(form,"pending_verification",False):
             self.request.session.cycle_key()

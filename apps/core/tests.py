@@ -242,12 +242,11 @@ class CommerceTests(TestCase):
             payload=api.call_args.kwargs["payload"];self.assertEqual(payload["items"][0]["unit_price"],Decimal("269.00"));self.assertNotIn("card",payload)
     @override_settings(OPENPAY_MERCHANT_ID="m12345678901234567890",OPENPAY_PRIVATE_KEY="test-private",OPENPAY_WEBHOOK_USER="webhook",OPENPAY_WEBHOOK_PASSWORD="unique-test-password",APP_URL="https://carranco.example.test")
     def test_48_openpay_confirmation_once(self):
-        order=self.order(provider="openpay");confirm("openpay",self.verified(order,identifier="charge123"));confirm("openpay",self.verified(order,identifier="charge123"));self.product.refresh_from_db();self.assertEqual(self.product.stock,18)
+        order=self.order();order.metodo_pago="openpay";order.save(update_fields=["metodo_pago"]);confirm("openpay",self.verified(order,identifier="charge123"));confirm("openpay",self.verified(order,identifier="charge123"));self.product.refresh_from_db();self.assertEqual(self.product.stock,18)
     @override_settings(OPENPAY_WEBHOOK_USER="webhook",OPENPAY_WEBHOOK_PASSWORD="unique-test-password")
-    def test_49_openpay_basic_verification(self):
-        basic=base64.b64encode(b"webhook:unique-test-password").decode()
-        response=self.client.post("/pagos/webhook/openpay/",data=json.dumps({"type":"verification","verification_code":"code-test"}),content_type="application/json",HTTP_AUTHORIZATION="Basic "+basic)
-        self.assertEqual(response.status_code,200);self.assertEqual(self.client.post("/pagos/webhook/openpay/",data="{}",content_type="application/json").status_code,401)
+    def test_49_openpay_webhook_is_retired(self):
+        response=self.client.post("/pagos/webhook/openpay/",data="{}",content_type="application/json")
+        self.assertEqual(response.status_code,404)
     def test_50_secrets_not_in_frontend(self):
         self.login();order=self.order()
         for path in ["/","/checkout/",f"/mis-pedidos/{order.numero}/"]:
@@ -282,7 +281,7 @@ class CommerceTests(TestCase):
         self.product.refresh_from_db();self.assertEqual(self.product.stock,18);self.assertEqual(MovimientoInventario.objects.count(),1);self.assertEqual(Pago.objects.get(payment_id_externo="992").estado,"revision")
     @override_settings(OPENPAY_MERCHANT_ID="m12345678901234567890",OPENPAY_PRIVATE_KEY="test-private",APP_URL="https://carranco.example.test")
     def test_57_openpay_payload_no_card_data(self):
-        order=self.order(provider="openpay")
+        order=self.order();order.metodo_pago="openpay";order.save(update_fields=["metodo_pago"])
         with patch("apps.pagos.services.openpay.api",return_value={"id":"charge-test","payment_method":{"url":"https://sandbox-api.openpay.mx/checkout/test"}}) as api:
             openpay.create(order,"127.0.0.1");data=api.call_args.kwargs["payload"]
             self.assertIs(data["confirm"],False);self.assertEqual(data["amount"],Decimal("269.00"));self.assertNotIn("card",data);self.assertNotIn("cvv",data)
@@ -291,14 +290,11 @@ class CommerceTests(TestCase):
         self.assertEqual(client.post("/cuenta/logout/").status_code,403)
 
     @override_settings(OPENPAY_MERCHANT_ID="m12345678901234567890",OPENPAY_PRIVATE_KEY="test-private",OPENPAY_WEBHOOK_USER="webhook",OPENPAY_WEBHOOK_PASSWORD="unique-test-password",APP_URL="https://carranco.example.test")
-    def test_60_openpay_webhook_lookup_duplicate(self):
-        order=self.order(provider="openpay");basic=base64.b64encode(b"webhook:unique-test-password").decode()
-        with patch("apps.pagos.views.openpay.fetch",return_value=self.verified(order,identifier="charge-test")) as lookup:
-            for _ in range(2):
-                response=self.client.post("/pagos/webhook/openpay/",data=json.dumps({"type":"charge.succeeded","transaction":{"id":"charge-test"}}),content_type="application/json",HTTP_AUTHORIZATION="Basic "+basic)
-                self.assertEqual(response.status_code,200)
-            self.assertEqual(lookup.call_count,2)
-        self.assertEqual(MovimientoInventario.objects.count(),1)
+    def test_60_openpay_webhook_never_contacts_provider(self):
+        with patch("apps.pagos.views.openpay.fetch") as lookup:
+            response=self.client.post("/pagos/webhook/openpay/",data=json.dumps({"type":"charge.succeeded","transaction":{"id":"charge-test"}}),content_type="application/json")
+        self.assertEqual(response.status_code,404)
+        lookup.assert_not_called()
     def test_61_legacy_import_warns_stock_cap(self):
         self.product.stock=1;self.product.save()
         response=self.client.post("/carrito/importar/",data=json.dumps([{"id":"ranchero","quantity":2}]),content_type="application/json")

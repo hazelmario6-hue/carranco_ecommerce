@@ -17,7 +17,6 @@ from apps.catalogo.models import Producto
 from apps.pedidos.models import Pedido,PedidoItem
 from apps.pedidos.services import adjust_stock,transition
 from apps.core.models import Auditoria
-from apps.pagos.models import VerificacionOpenpay
 from .forms import ProductoForm,AjusteForm,EstadoForm
 
 def staff_required(permission=None):
@@ -33,7 +32,7 @@ def staff_required(permission=None):
 def dashboard(request):
     orders=Pedido.objects.all();products=Producto.objects.filter(activo=True)
     stats={"Pedidos totales":orders.count(),"Pendientes":orders.filter(estado="pendiente_pago").count(),"Pagados":orders.filter(estado_pago="aprobado").count(),"Entregados":orders.filter(estado="entregado").count(),"Clientes registrados":get_user_model().objects.filter(is_staff=False).count(),"Productos activos":products.count(),"Stock bajo":products.filter(stock__gt=F("stock_reservado"),stock__lte=F("stock_reservado")+settings.STOCK_LOW_THRESHOLD).count(),"Agotados":products.filter(stock=F("stock_reservado")).count(),"Ventas":orders.filter(estado_pago="aprobado").aggregate(total=Sum("total_cobrado"))["total"] or Decimal("0.00")}
-    return render(request,"dashboard/dashboard.html",{"stats":stats,"ultimos":orders.select_related("usuario")[:6],"stock_bajo":products.annotate(disponible=F("stock")-F("stock_reservado")).filter(disponible__lte=settings.STOCK_LOW_THRESHOLD),"verificacion_openpay":VerificacionOpenpay.objects.order_by("-id").first() if request.user.is_superuser else None})
+    return render(request,"dashboard/dashboard.html",{"stats":stats,"ultimos":orders.select_related("usuario")[:6],"stock_bajo":products.annotate(disponible=F("stock")-F("stock_reservado")).filter(disponible__lte=settings.STOCK_LOW_THRESHOLD)})
 @staff_required("catalogo.view_producto")
 def products(request):
     query=request.GET.get("q","")[:150]
@@ -111,3 +110,25 @@ def export(request):
     for order in Pedido.objects.select_related("usuario").iterator(chunk_size=200):
         writer.writerow([csv_safe(value) for value in [order.numero,order.usuario.get_full_name(),order.created_at.isoformat(),order.estado,format(order.total_cobrado,".2f"),order.metodo_pago]])
     return response
+
+
+from apps.core.models import Promocion
+from .forms import PromocionForm
+
+@staff_required("core.view_promocion")
+def promotions(request):
+    return render(request, "dashboard/promociones.html", {"promociones": Promocion.objects.select_related("producto")})
+
+@staff_required()
+def promotion_edit(request, pk=None):
+    permission = "core.change_promocion" if pk else "core.add_promocion"
+    if not request.user.has_perm(permission): raise PermissionDenied
+    promotion = get_object_or_404(Promocion, pk=pk) if pk else None
+    form = PromocionForm(request.POST if request.method == "POST" else None, instance=promotion)
+    if request.method == "POST" and form.is_valid():
+        with transaction.atomic():
+            saved = form.save()
+            Auditoria.objects.create(usuario=request.user, evento="editar_promocion" if pk else "crear_promocion", objeto=str(saved.pk))
+        messages.success(request, "Promoción guardada. Su vigencia se aplica en web y app.")
+        return redirect("dashboard:promociones")
+    return render(request, "dashboard/promocion_form.html", {"form": form, "promocion": promotion})

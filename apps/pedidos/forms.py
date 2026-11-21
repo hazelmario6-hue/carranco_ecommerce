@@ -7,14 +7,12 @@ class CheckoutForm(forms.Form):
     clave=forms.UUIDField(widget=forms.HiddenInput)
     resumen=forms.CharField(widget=forms.HiddenInput)
 
-    def __init__(self,*args,user,openpay=False,mercadopago=False,**kwargs):
+    def __init__(self,*args,user,mercadopago=False,**kwargs):
         super().__init__(*args,**kwargs)
         self.fields["direccion"].queryset=Direccion.objects.filter(usuario=user)
         choices=[]
         if mercadopago:
             choices.append(("mercadopago","Mercado Pago · tarjeta y métodos disponibles"))
-        if openpay:
-            choices.append(("openpay","Openpay · tarjeta"))
         self.fields["proveedor"].choices=choices
         if len(choices)==1:
             self.fields["proveedor"].initial=choices[0][0]

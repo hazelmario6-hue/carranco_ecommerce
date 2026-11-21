@@ -69,3 +69,17 @@ class AjusteForm(forms.Form):
 class EstadoForm(forms.Form):
     estado=forms.ChoiceField(choices=[("preparando","Preparando"),("en_camino","En camino"),("entregado","Entregado"),("cancelado","Cancelar pendiente")])
     comentario=forms.CharField(min_length=5,max_length=250,label="Comentario")
+
+
+from apps.core.models import Promocion
+
+class PromocionForm(forms.ModelForm):
+    class Meta:
+        model = Promocion
+        fields = ["titulo", "descripcion", "producto", "imagen_url", "imagen_alt", "enlace", "texto_boton", "inicio", "fin", "activa", "orden"]
+        widgets = {
+            "descripcion": forms.Textarea(attrs={"rows": 3}),
+            "inicio": forms.DateTimeInput(format="%Y-%m-%dT%H:%M", attrs={"type": "datetime-local"}),
+            "fin": forms.DateTimeInput(format="%Y-%m-%dT%H:%M", attrs={"type": "datetime-local"}),
+        }
+        help_texts = {"inicio": "Hora de Ciudad de México. Vacío: disponible desde ahora.", "fin": "Hora de Ciudad de México. Vacío: sin fecha de término."}

@@ -1,0 +1,10 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Promociones | Administración Carranco{% endblock %}
+{% block dashboard_content %}
+<h1 class="commerce-title">Promociones</h1>
+<p>Una publicación para web y app. La vigencia usa la hora de Ciudad de México.</p>
+{% if perms.core.add_promocion %}<p><a class="button button-navy" href="{% url 'dashboard:promocion_nueva' %}">Nueva promoción</a></p>{% endif %}
+<div class="form-card table-scroll"><table><thead><tr><th>Título</th><th>Estado</th><th>Orden</th><th>Vigencia</th><th>Acciones</th></tr></thead><tbody>
+{% for promo in promociones %}<tr><td>{{ promo.titulo }}</td><td>{{ promo.estado_publicacion }}</td><td>{{ promo.orden }}</td><td>{{ promo.inicio|date:"d/m/Y H:i"|default:"Desde su publicación" }}<br>{{ promo.fin|date:"d/m/Y H:i"|default:"Sin fecha de término" }}</td><td>{% if perms.core.change_promocion %}<a class="text-link" href="{% url 'dashboard:promocion_editar' promo.pk %}">Editar</a>{% endif %}</td></tr>{% empty %}<tr><td colspan="5">Todavía no hay promociones. Crea la primera.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

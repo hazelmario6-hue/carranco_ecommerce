@@ -1,0 +1,16 @@
+{% if promociones %}
+<section class="promotions-section container" id="ofertas" aria-labelledby="promotions-title">
+  <div class="section-heading"><div><p class="eyebrow">PARA COMPARTIR</p><h2 id="promotions-title">Promociones para tu mesa</h2></div></div>
+  <div class="promotion-rail" role="region" aria-label="Promociones vigentes" tabindex="0">
+  {% for promo in promociones %}
+    <article class="promotion-card">
+      <a class="promotion-photo" href="{{ promo.destino }}"{% if promo.externa and not request.app_mode %} target="_blank"{% endif %}{% if promo.externa %} rel="noopener noreferrer" data-external{% endif %}><img src="{{ promo.foto }}" alt="{{ promo.imagen_alt }}" width="600" height="400" loading="lazy"></a>
+      <div class="promotion-copy"><p class="eyebrow">SELECCIÓN CARRANCO</p><h3>{{ promo.titulo }}</h3><p>{{ promo.descripcion }}</p>
+      {% if promo.producto %}<p class="promotion-price">${{ promo.producto.precio_catalogo|floatformat:2 }} <small>MXN</small></p>{% endif %}
+      {% if promo.fin %}<p class="promotion-validity">Hasta el {{ promo.fin|date:"j M Y, H:i" }} · hora de Ciudad de México</p>{% endif %}
+      <a class="button button-gold" href="{{ promo.destino }}"{% if promo.externa and not request.app_mode %} target="_blank"{% endif %}{% if promo.externa %} rel="noopener noreferrer" data-external{% endif %}>{{ promo.texto_boton }} <span aria-hidden="true">→</span></a></div>
+    </article>
+  {% endfor %}
+  </div>
+</section>
+{% endif %}

@@ -1,3 +1,5 @@
+> Actualización 20 de noviembre de 2026: empieza por [GUIA_ACTUALIZACION.md](GUIA_ACTUALIZACION.md). Solo Mercado Pago; promociones administrables y modo app aislado.
+
 > Actualización de pagos: consulta [README_PRECIO_COMPLETO_2026-11-11.md](README_PRECIO_COMPLETO_2026-11-11.md). Los pedidos nuevos cobran el precio de catálogo más envío; las explicaciones antiguas sobre importes reducidos y el límite de $100 MXN ya no aplican.
 >
 > Actualización 2026-11-11: consulta [README_ACTUALIZACION_2026-11-11.md](README_ACTUALIZACION_2026-11-11.md). El registro actual usa PIN en la misma pantalla y el remitente usa servicioslnformaticos.it.com.
@@ -8,12 +10,12 @@
 
 **PROYECTO ACADÉMICO · SITIO NO OFICIAL**
 
-Proyecto Django ejecutable con `python manage.py runserver`. Mantiene la interfaz de las tres entregas anteriores y completa cuentas, carrito, checkout, pedidos y administración. Las integraciones de Mercado Pago y Openpay están implementadas y requieren tus credenciales y un webhook HTTPS antes de efectuar operaciones externas. Apple Pay permanece oculto.
+Proyecto Django ejecutable con `python manage.py runserver`. Mantiene la interfaz de las tres entregas anteriores y completa cuentas, carrito, checkout, pedidos y administración. Mercado Pago es la única pasarela activa y requiere tus credenciales y un webhook HTTPS. Apple Pay permanece oculto.
 
 ## Qué incluye
 
 - Django 5.2.18 LTS, Django Authentication, Sessions, Forms, Messages y ORM.
-- MySQL 8 con `mysqlclient`; no utiliza SQLite ni XAMPP.
+- MySQL 8 con `mysqlclient` en el despliegue; las pruebas aisladas de `config.test_settings` utilizan SQLite.
 - Inicio, catálogo, detalle, búsqueda dinámica, categorías, galería y relacionados.
 - Los tres CSS anteriores idénticos: paleta, fuentes, navbar, footer y fotografías conservados.
 - Registro de clientes con contraseña validada, login, bloqueo tras cinco fallos, logout POST, perfil y direcciones.
@@ -21,10 +23,10 @@ Proyecto Django ejecutable con `python manage.py runserver`. Mantiene la interfa
 - Checkout que recalcula los importes en el servidor y exige aceptar un resumen firmado. Si cambian los precios, se exige revisar el nuevo monto.
 - Pedidos con número de backend CARR-000001, snapshots de productos y dirección, historial y seguimiento.
 - Reservas transaccionales con bloqueo de filas; un pago aprobado descuenta inventario una sola vez.
-- Mercado Pago Checkout Pro y Openpay con formulario alojado: la tarjeta se captura en la pasarela, nunca en Django.
-- Webhooks separados, firma HMAC para Mercado Pago, HTTP Basic para Openpay y consulta a la API antes de confirmar.
+- Mercado Pago Checkout Pro con formulario alojado: la tarjeta se captura en la pasarela, nunca en Django.
+- Webhook con firma HMAC para Mercado Pago y consulta a la API antes de confirmar.
 - Django Admin y dashboard personalizado: productos, precios, imágenes, baja lógica, inventario auditado, pedidos, estados, clientes, reportes y CSV.
-- Contacto persistido en MySQL, Nosotros, FAQ y asistente WhatsApp de demostración.
+- Contacto persistido en MySQL, Nosotros, FAQ y enlace al bot de WhatsApp del proyecto.
 
 Las pantallas de cliente y dashboard extienden `templates/base.html`. Las páginas del dashboard utilizan `templates/dashboard/base.html`. Django Admin conserva su interfaz propia con los colores Carranco.
 
@@ -212,28 +214,15 @@ El código consulta `/users/me` al crear la preferencia y evita utilizar credenc
 
 Para activar dinero real usa credenciales productivas, webhooks productivos, `PAYMENTS_LIVE=True`, `DEBUG=False` y HTTPS. La pasarela cobra el precio de catálogo más envío de cada pedido **nuevo**. Consulta [README_PRECIO_COMPLETO_2026-11-11.md](README_PRECIO_COMPLETO_2026-11-11.md) y verifica el despliegue antes de aceptar un pago real.
 
-## Openpay México
+## Pasarela retirada
 
-El servicio separado usa el formulario alojado mediante `POST /v1/{merchant_id}/charges`, `method=card`, `confirm=false` y `redirect_url`. Recibe la URL del proveedor en `payment_method.url`. No se utiliza un SDK antiguo ni se envían datos de tarjeta desde la tienda.
-
-| Dato | Dónde se obtiene | Variable |
-| --- | --- | --- |
-| ID de comercio | Dashboard Openpay México → datos de integración | OPENPAY_MERCHANT_ID |
-| Llave privada | Dashboard Openpay México → credenciales/API | OPENPAY_PRIVATE_KEY |
-| Entorno de API | Sandbox o cuenta productiva | OPENPAY_PRODUCTION |
-| Usuario y contraseña del receptor webhook | Los defines tú y los configuras también en Openpay | OPENPAY_WEBHOOK_USER, OPENPAY_WEBHOOK_PASSWORD |
-
-No se necesita llave pública porque se utiliza redirección a un formulario alojado. La opción Openpay aparece cuando están configurados los datos, HTTPS y el mismo entorno que `PAYMENTS_LIVE`.
-
-Configura el webhook `https://TU_DOMINIO/pagos/webhook/openpay/` con HTTP Basic usando el usuario y contraseña anteriores. El evento verification guarda su código; un superusuario lo ve en el resumen del dashboard o en Django Admin para completar la verificación en Openpay. Las notificaciones de cargo se confirman consultando GET del cargo con la llave privada. Un evento recibido no se acepta como prueba de aprobación por sí solo.
-
-Prueba Openpay después de Mercado Pago. La cuenta debe tener habilitado el formulario alojado y los métodos correspondientes. La operación externa no fue probada con una cuenta del usuario; los tests comprueban payloads, autenticación y confirmación con respuestas controladas.
+Openpay está desactivado: no se muestra, no crea pedidos nuevos y su webhook no está publicado. Vacía las variables `OPENPAY_*` en Railway. Se conservan modelos y adaptador únicamente para datos históricos; no se requiere su aprobación ni configuración.
 
 ## Apple Pay
 
 **Apple Pay preparado para futura habilitación.** No se renderiza un botón Apple Pay.
 
-Apple Pay existe en México, pero eso no demuestra que una cuenta concreta de Mercado Pago/Openpay pueda habilitarlo para este checkout. Faltan comprobar una vía oficialmente soportada por la pasarela de tu cuenta, Merchant ID, certificado de identidad/procesamiento cuando corresponda, dominio verificado, HTTPS y un dispositivo compatible. No se proporcionaron esa cuenta, dominio ni certificados. Una futura integración deberá usar la misma confirmación transaccional del backend; nunca considerar el callback del navegador como prueba de pago.
+Apple Pay existe en México, pero eso no demuestra que una cuenta concreta de Mercado Pago pueda habilitarlo para este checkout. Faltan comprobar una vía oficialmente soportada por la pasarela de tu cuenta, Merchant ID, certificado de identidad/procesamiento cuando corresponda, dominio verificado, HTTPS y un dispositivo compatible. No se proporcionaron esa cuenta, dominio ni certificados. Una futura integración deberá usar la misma confirmación transaccional del backend; nunca considerar el callback del navegador como prueba de pago.
 
 ## Inventario, cancelaciones e idempotencia
 
@@ -255,7 +244,6 @@ Las reservas duran `RESERVATION_MINUTES=30` por defecto. Hasta ejecutar la limpi
 
 ```powershell
 .\.venv\Scripts\python.exe manage.py reconcile_payment mercadopago ID_DEL_PAGO
-.\.venv\Scripts\python.exe manage.py reconcile_payment openpay ID_DEL_CARGO
 ```
 
 Para limpieza de sesiones Django:
@@ -299,9 +287,9 @@ GRANT ALL PRIVILEGES ON test_carranco_django.*
 TO 'carranco_app'@'127.0.0.1';
 ```
 
-Se comprobaron 64 pruebas con MySQL 8.0.46: registro, login, sesiones, direcciones, catálogo, carrito, precios, consentimiento, checkout, pedidos, ownership, CSRF, estados, inventario, CRUD, CSV, webhooks, idempotencia y concurrencia sobre la última unidad. Los proveedores externos se controlan en los tests; no se afirma una operación sandbox o productiva ejecutada con credenciales reales.
+En la entrega original se comprobaron 64 pruebas con MySQL 8.0.46: registro, login, sesiones, direcciones, catálogo, carrito, precios, consentimiento, checkout, pedidos, ownership, CSRF, estados, inventario, CRUD, CSV, webhooks, idempotencia y concurrencia sobre la última unidad. Los proveedores externos se controlan en los tests; no se afirma una operación sandbox o productiva ejecutada con credenciales reales.
 
-Los tres CSS generales se compararon byte a byte con la tercera entrega; son idénticos. Los templates renderizan correctamente y los JavaScript pasan la verificación de sintaxis. No se dispuso de una comprobación visual en navegador en este entorno; revisa en tu instalación anchos 320/390/768/1280/1440, galería, menú, filtros y toasts antes de presentar la demostración.
+La actualización del 20 de noviembre tiene 124 pruebas Django (122 aprobadas y 2 omitidas por requerir MySQL), 60 comprobaciones en Chromium y un APK compilado. Consulta `docs/VERIFICACION_2026-11-20.md` para conocer el alcance y las verificaciones pendientes en dispositivos reales.
 
 `docs/VERIFICACION.md` detalla el resultado y los pasos de aceptación con tu cuenta de pasarela.
 
@@ -329,9 +317,6 @@ Los tres CSS generales se compararon byte a byte con la tercera entrega; son id�
 - Checkout Pro Preferences: https://www.mercadopago.com.mx/developers/en/reference/online-payments/checkout-pro-preferences/overview
 - Crear preferencia: https://www.mercadopago.com.mx/developers/en/reference/online-payments/checkout-pro-preferences/create-preference/post
 - Webhooks: https://www.mercadopago.com.mx/developers/en/docs/your-integrations/notifications/webhooks
-- Openpay México, redirección: https://documents.openpay.mx/docs/op-form-charge
-- Openpay México, API: https://documents.openpay.mx/docs/api.html
-- Openpay México, notificaciones: https://documents.openpay.mx/docs/webhooks.html
 - Apple Pay México: https://www.apple.com/mx/apple-pay/
 - Apple Pay web: https://developer.apple.com/help/account/configure-app-capabilities/configure-apple-pay-on-the-web/
 

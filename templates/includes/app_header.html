@@ -14,5 +14,6 @@
     <a href="{% url 'core:acerca_app' %}">Acerca de <span aria-hidden="true">→</span></a>
   </nav>
   {% if user.is_authenticated %}<form method="post" action="{% url 'cuentas:logout' %}">{% csrf_token %}<button class="button button-outline" type="submit">Cerrar sesión</button></form>{% else %}<a class="button button-navy" href="{% url 'cuentas:login' %}">Iniciar sesión</a><a class="drawer-register" href="{% url 'cuentas:registro' %}">Crear cuenta</a>{% endif %}
+  <div class="drawer-social"><h3>Redes del proyecto</h3>{% include "includes/social_links.html" %}</div>
   <p class="drawer-signature">San Luis Potosí · Desde 1885</p>
 </dialog>

@@ -1,0 +1,3 @@
+<div class="social-links" aria-label="Redes sociales del proyecto Carranco">
+{% for red in social_links %}<a href="{{ red.url }}"{% if not request.app_mode %} target="_blank"{% endif %} rel="noopener noreferrer" aria-label="{{ red.nombre }}" title="{{ red.nombre }}" data-external><i class="fa-brands fa-{{ red.icono }}" aria-hidden="true"></i><span class="social-name">{{ red.nombre }}</span></a>{% endfor %}
+</div>

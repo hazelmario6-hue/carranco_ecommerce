@@ -19,17 +19,17 @@
     <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
     
     
-<link rel="stylesheet" href="{% static 'css/commerce.css' %}?v=20261111">
+<link rel="stylesheet" href="{% static 'css/commerce.css' %}?v=20261120">
 <link rel="stylesheet" href="{% static 'css/footer.css' %}">
 <script src="{% static 'js/main.js' %}" defer></script>
-<script src="{% static 'js/carrito.js' %}?v=20261111" defer></script>
+<script src="{% static 'js/carrito.js' %}?v=20261120" defer></script>
 {% if request.app_mode %}
-<link rel="stylesheet" href="{% static 'css/app.css' %}?v=20261111">
-<script src="{% static 'js/app.js' %}?v=20261111" defer></script>
+<link rel="stylesheet" href="{% static 'css/app.css' %}?v=20261120">
+<script src="{% static 'js/app.js' %}?v=20261120" defer></script>
 {% endif %}
 {% block scripts %}{% endblock %}
 </head>
-<body class="{% block body_class %}{% endblock %}{% if request.app_mode %} app-mode{% endif %}" data-cart-url="{% url 'carrito:actualizar' %}" data-import-url="{% url 'carrito:importar' %}" data-cart-page="{% url 'carrito:detalle' %}">
+<body class="{% block body_class %}{% endblock %}{% if request.app_mode %} app-mode{% endif %}" data-cart-url="{% url 'carrito:actualizar' %}" data-import-url="{% url 'carrito:importar' %}" data-cart-state-url="{% url 'carrito:estado' %}" data-cart-page="{% url 'carrito:detalle' %}">
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
     {% if request.app_mode %}
     {% include "includes/app_header.html" %}
@@ -67,7 +67,7 @@
             <div class="footer-brand"><a class="brand" href="{% url 'core:index' %}" aria-label="Quesos Carranco, inicio"><img data-brand-logo src="{% static 'img/carranco-logo.png' %}" width="154" height="64" alt="Quesos Carranco"><span class="brand-fallback" hidden>Carranco<small>DESDE 1885</small></span></a><p>Una tradición quesera de San Luis Potosí. Sabores que acompañan recetas, encuentros y momentos en familia.</p></div>
             <div><h3>Navegación</h3><ul class="footer-links"><li><a href="{% url 'core:index' %}">Inicio</a></li><li><a href="{% url 'catalogo:productos' %}">Productos</a></li><li><a href="{% url 'core:nosotros' %}">Nosotros</a></li><li><a href="{% url 'core:contacto' %}">Contacto</a></li></ul></div>
             <div><h3>Ayuda</h3><ul class="footer-links"><li><a href="{% url 'core:ayuda' %}">Preguntas frecuentes</a></li><li><button type="button" data-help="envios">Envíos</button></li><li><button type="button" data-help="pagos">Métodos de pago</button></li><li><a href="{% url 'pedidos:historial' %}">Seguimiento de pedido</a></li></ul></div>
-            <div class="footer-social"><h3>Compartimos la tradición</h3><div class="social-links"><button type="button" data-social="Facebook" aria-label="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></button><button type="button" data-social="Instagram" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></button><button type="button" data-social="X" aria-label="X"><i class="fa-brands fa-x-twitter" aria-hidden="true"></i></button><button type="button" data-social="YouTube" aria-label="YouTube"><i class="fa-brands fa-youtube" aria-hidden="true"></i></button><button type="button" data-social="TikTok" aria-label="TikTok"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></button><button type="button" data-whatsapp aria-label="WhatsApp, asistente"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></button><button type="button" data-social="Telegram" aria-label="Telegram"><i class="fa-brands fa-telegram" aria-hidden="true"></i></button></div></div>
+            <div class="footer-social"><h3>Compartimos la tradición</h3>{% include 'includes/social_links.html' %}</div>
         </div>
         <div class="container"><p class="credits">© <span id="current-year">{% now "Y" %}</span> Quesos Carranco. Fotografías ambientales: Unsplash. Marca y fotografías de producto: Carranco. Importes en MXN.</p></div>
 {% include 'includes/disclosure.html' %}
@@ -75,7 +75,7 @@
 {% endif %}
 {% if request.app_mode %}{% include "includes/app_nav.html" %}{% endif %}
 
-    {% if not request.app_mode %}<button class="whatsapp-float" type="button" data-whatsapp aria-label="Abrir asistente Carranco"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span>¿Te ayudamos?</span></button>{% endif %}
+    {% if not request.app_mode %}<a class="whatsapp-float" href="{{ whatsapp_url }}" target="_blank" rel="noopener noreferrer" aria-label="Abrir asistente Carranco"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span>¿Te ayudamos?</span></a>{% endif %}
     <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
     <dialog class="modal" id="info-dialog" aria-labelledby="info-title"><div class="modal-top"><p class="eyebrow">QUESOS CARRANCO</p><button class="icon-button close-dialog" type="button" data-close-dialog aria-label="Cerrar ventana"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div><h2 id="info-title"></h2><p id="info-message"></p><button class="button button-navy" type="button" data-close-dialog>Entendido</button></dialog>

@@ -1,3 +1,5 @@
+> Versión actual: consulta [GUIA_ACTUALIZACION.md](GUIA_ACTUALIZACION.md). Mantén PAYMENTS_LIVE con el valor que ya utilizas; Openpay se retira.
+
 > Actualización de pagos: consulta [README_PRECIO_COMPLETO_2026-11-11.md](README_PRECIO_COMPLETO_2026-11-11.md). Los pedidos nuevos cobran el precio de catálogo más envío; las indicaciones antiguas sobre cobros reducidos no aplican.
 >
 > Actualización 2026-11-11: consulta [README_ACTUALIZACION_2026-11-11.md](README_ACTUALIZACION_2026-11-11.md). El registro actual usa PIN en la misma pantalla y el remitente usa servicioslnformaticos.it.com.
@@ -13,7 +15,7 @@ Actualización del 10 de noviembre de 2026. Conserva el diseño web, el modo del
 - **Reenvío:** espera de un minuto y máximo cinco solicitudes por cuenta cada hora. Solicitar otro enlace invalida el anterior. El formulario anónimo responde de forma genérica.
 - **Recibo por correo:** se prepara al confirmar un pago aprobado con la API del proveedor y completar el pedido. Incluye productos, cantidades, precios de catálogo, importe confirmado, referencia, fecha y enlace privado al recibo. Los pagos de prueba se identifican como tales. Un pago pendiente, rechazado o un regreso del navegador no genera un recibo de compra.
 - **Cola de envío:** un fallo del proveedor de correo deja el mensaje pendiente. El pago conserva su estado confirmado; el comando programado reintenta los mensajes. Una notificación de pago repetida no crea otro recibo ni descuenta stock otra vez.
-- **Mercado Pago y Openpay:** conserva e integra los adaptadores existentes de checkout alojado y webhooks. Añade consulta del estado por pedido, separación de intentos de prueba/producción, selección únicamente de pasarelas configuradas y comprobación de correo verificado.
+- **Mercado Pago:** checkout alojado y webhook con firma. Añade consulta del estado por pedido, separación de intentos de prueba/producción, selección únicamente de pasarelas configuradas y comprobación de correo verificado.
 
 El recibo **no es una factura fiscal CFDI**. No incluye timbrado, XML ni integración con un PAC. No se agregó emisión fiscal. Los pedidos anteriores a esta actualización no reciben correos retrospectivos: no tienen la nueva copia del correo verificado del cliente.
 
@@ -138,34 +140,9 @@ Consulta desde el contenedor, después de configurar las variables:
 
 Realiza la compra de prueba desde una cuenta de Carranco verificada. En el pedido pulsa **Pagar con mercadopago**, completa el checkout con los datos de prueba del proveedor y regresa al pedido. Si la notificación tarda, pulsa **Consultar pago con la pasarela**. Se consulta la API y se verifican referencia, importe, moneda y entorno; los parámetros de regreso del navegador no aprueban el pago.
 
-## 5. Openpay México: sandbox
+## 5. Pasarela retirada
 
-Openpay es una integración independiente: necesita su propia cuenta y credenciales. La cuenta debe tener habilitado el checkout alojado/redirección.
-
-| Variable | Para probar |
-| --- | --- |
-| `OPENPAY_MERCHANT_ID` | ID del comercio sandbox |
-| `OPENPAY_PRIVATE_KEY` | Llave privada sandbox |
-| `OPENPAY_PRODUCTION` | `False` |
-| `OPENPAY_WEBHOOK_USER` | Usuario que defines para autenticar notificaciones |
-| `OPENPAY_WEBHOOK_PASSWORD` | Contraseña larga y exclusiva definida por ti |
-| `PAYMENTS_LIVE` | `False`, debe coincidir con el entorno de Openpay |
-
-No se necesita llave pública: los datos de tarjeta se introducen en el checkout alojado. El código crea el cargo con `confirm=false` y utiliza la URL devuelta por Openpay.
-
-1. Configura esas variables en el servicio Django y despliega.
-2. En Openpay configura un webhook hacia:
-
-   ```text
-   https://carrancoecommerce-production.up.railway.app/pagos/webhook/openpay/
-   ```
-
-3. Configura su autenticación HTTP Basic con el mismo usuario y contraseña de las variables. No incrustes la contraseña en la URL.
-4. Openpay enviará un evento de verificación. Entra como superusuario a `/admin/pagos/verificacionopenpay/` y copia el código recibido para completar la verificación en Openpay.
-5. Habilita las notificaciones de cargos correspondientes. El receptor procesa `charge.succeeded`, `charge.failed`, `charge.cancelled` y `charge.refunded`, y consulta el cargo con la API antes de actualizar el pedido.
-6. Ejecuta `check_integrations --remote` y una compra sandbox con los datos de prueba de la [documentación oficial](https://documents.openpay.mx/docs/api/index.html). Prueba también un rechazo.
-
-Carranco envía el recibo cuando confirma el pedido. Se deja `send_email=false` en la creación del cargo de Openpay para que no haya un segundo envío desde ese flujo de Openpay.
+Openpay no se configura en esta versión. Sus credenciales no activan la opción y su endpoint webhook está retirado. Deja vacías sus variables en Railway; los datos de pagos históricos se conservan.
 
 ## 6. Prueba de aceptación antes de presentar la app
 
@@ -186,9 +163,9 @@ En caso de timeout al iniciar el pago, el intento se conserva para revisión y s
 
 Los pedidos **nuevos** cobran el total de catálogo más envío. Los pedidos históricos conservan su importe anterior. Consulta [README_PRECIO_COMPLETO_2026-11-11.md](README_PRECIO_COMPLETO_2026-11-11.md).
 
-Para activar dinero real, usa credenciales productivas del vendedor, firma webhook del entorno correspondiente, `PAYMENTS_LIVE=True`, `DEBUG=False` y HTTPS. Para Openpay usa también `OPENPAY_PRODUCTION=True` y sus credenciales productivas.
+Para activar dinero real, usa credenciales productivas del vendedor, firma webhook del entorno correspondiente, `PAYMENTS_LIVE=True`, `DEBUG=False` y HTTPS.
 
-`PAYMENTS_LIVE` afecta a las dos pasarelas: no mezcles Mercado Pago productivo con Openpay sandbox en ese despliegue. Deshabilita la pasarela cuyas variables no estén listas. No reutilices pedidos/intentos de prueba para producción; utiliza pedidos nuevos. Deja vacío `MP_TEST_BUYER_EMAIL` en producción. No elimines la validación de entorno o importe para hacer pasar un pago.
+`PAYMENTS_LIVE` controla Mercado Pago. No reutilices pedidos/intentos de prueba para producción; utiliza pedidos nuevos. Deja vacío `MP_TEST_BUYER_EMAIL` en producción. No elimines la validación de entorno o importe para hacer pasar un pago.
 
 ## Archivos y comprobación local
 
@@ -205,4 +182,3 @@ No se ejecutaron en esta entrega los dos casos específicos de MySQL (motor y co
 - [Resend: restricción del dominio de prueba](https://resend.com/docs/knowledge-base/403-error-resend-dev-domain)
 - [Mercado Pago: pruebas de Checkout Pro](https://www.mercadopago.com.mx/developers/es/docs/checkout-pro-preferences/integration-test/test-purchases)
 - [Mercado Pago: Webhooks](https://www.mercadopago.com.mx/developers/es/docs/your-integrations/notifications/webhooks)
-- [Openpay México: API](https://documents.openpay.mx/docs/api/index.html)

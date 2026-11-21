@@ -22,3 +22,15 @@ class CorreoAdmin(ReadOnlyAdmin):
     list_filter=["estado"]
     def has_view_permission(self,request,obj=None): return request.user.is_superuser
     def has_change_permission(self,request,obj=None): return request.user.is_superuser
+
+
+from .models import Promocion
+from apps.dashboard.forms import PromocionForm
+
+@admin.register(Promocion)
+class PromocionAdmin(admin.ModelAdmin):
+    form = PromocionForm
+    list_display = ["titulo", "activa", "orden", "inicio", "fin", "estado_publicacion"]
+    list_filter = ["activa"]
+    search_fields = ["titulo", "descripcion"]
+    ordering = ["orden", "pk"]

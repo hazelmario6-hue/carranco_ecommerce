@@ -41,3 +41,27 @@
 .app-bottom-nav{padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));background:var(--ivory);border-top:1px solid var(--line)}.app-bottom-nav>a{min-height:48px;gap:3px;font-size:10px;margin:0}.app-nav-icon{height:28px}.app-bottom-nav .nav-cart{gap:3px}.app-cart-badge{background:var(--navy);border:1px solid var(--ivory)}.app-mode .toast{bottom:calc(80px + env(safe-area-inset-bottom,0px));font-size:13px}
 .app-mode .internal-hero h1,.app-mode .commerce-title,.app-about h1{font-size:32px}.app-mode .commerce-section>.eyebrow{margin-bottom:8px}.app-mode .commerce-section,.app-about{padding-top:24px}.app-mode .form-card{border-radius:14px}.app-mode .form-card p{font-size:14px}.app-mode .form-field label{font-size:13px}.app-mode .form-field{margin-bottom:18px}.app-mode .form-card input{min-height:46px}.app-mode .account-nav{display:flex;flex-wrap:wrap;gap:8px}.app-mode .account-nav .button{padding:10px;font-size:11px}.app-about h1{margin-bottom:18px}.about-disclosure{border:1px solid var(--line);border-radius:12px;padding:16px;margin:24px 0;background:var(--cream)}.about-disclosure summary{cursor:pointer;font-size:13px;font-weight:600}.app-about .footer-disclosure{padding:12px 0 0;background:transparent}.app-about .footer-disclosure h2{display:none}.app-about .footer-disclosure p{font-size:12px}.app-mode #contenido{min-height:45vh}
 @media(min-width:650px){.app-hero-copy{width:760px;margin:auto;padding:30px}.app-hero{min-height:350px}.app-hero h1{font-size:48px}.app-product-rail{grid-auto-columns:calc((100% - 24px)/3)}}
+
+/* Content grows with the viewport; navigation space is measured, including safe areas. */
+.app-mode{--app-nav-space:calc(72px + env(safe-area-inset-bottom,0px));padding-bottom:var(--app-nav-space);min-height:100vh;min-height:100dvh}
+.app-mode main{flex:1;min-width:0}
+.app-mode .app-header{flex-shrink:0;padding-top:calc(8px + env(safe-area-inset-top,0px))}
+.app-mode .app-bottom-nav{padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
+.app-mode .container{width:min(calc(100% - 32px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)),950px)}
+.app-mode .commerce-section{min-height:0}
+.app-mode .app-drawer{height:100vh;height:100dvh;overflow-y:auto;overscroll-behavior:contain;padding-top:calc(24px + env(safe-area-inset-top,0px))}
+.app-mode .drawer-social{margin-top:24px}.drawer-social h3{font-size:22px;margin-bottom:12px}
+.app-mode .social-links{color:var(--navy);gap:8px}.app-mode .social-links a{font-size:11px;border-radius:8px;padding:8px 10px}
+.app-mode .toast{bottom:calc(var(--app-nav-space) + 12px)}
+.app-mode.keyboard-open{padding-bottom:0}.app-mode.keyboard-open .toast{bottom:16px}
+.app-mode .promotions-section{width:100%;padding:24px 0 10px}
+.app-mode .promotions-section h2{font-size:26px}.app-mode .promotions-section .section-heading{margin-bottom:14px}
+.app-mode .promotion-rail{display:grid;grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:min(88%,370px);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px}
+.app-mode .promotion-card{display:flex;flex-direction:column;scroll-snap-align:start;grid-column:auto}
+.app-mode .promotion-photo img{width:100%;height:185px;min-height:0;object-fit:cover}.app-mode .promotion-copy{padding:20px;flex:1;justify-content:flex-start}.app-mode .promotion-copy h3{font-size:26px}.app-mode .promotion-copy p{font-size:12px}.app-mode .promotion-copy .promotion-price{font-size:22px}.app-mode .promotion-copy .button{font-size:12px;min-height:44px;width:100%;margin-top:auto}
+.app-mode .promotion-copy .promotion-validity{font-size:10px}
+.app-mode .app-about h2{font-size:26px}.app-mode .app-about .social-links{margin:16px 0 24px}
+.app-mode .cart-item{grid-template-columns:56px minmax(0,1fr)}
+.app-mode .cart-item>div:last-child{grid-column:2}
+.app-mode .cart-item img{width:56px;height:56px}
+@media(max-height:500px) and (orientation:landscape){.app-mode .app-header{position:relative;min-height:60px}.app-brand img{height:44px;width:90px}.app-mode .app-bottom-nav>a{min-height:42px}.app-mode .app-nav-icon{height:24px}.app-mode .app-hero{min-height:240px}}

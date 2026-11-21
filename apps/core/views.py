@@ -2,9 +2,10 @@ from django.shortcuts import render,redirect
 from django.contrib import messages
 from apps.catalogo.models import Producto
 from .forms import ContactoForm
+from .models import Promocion
 
 def index(request):
-    return render(request,"core/app_inicio.html" if getattr(request,"app_mode",False) else "core/index.html",{"destacados":Producto.objects.filter(activo=True,destacado=True).select_related("categoria"),"duo":Producto.objects.filter(legacy_id="duo-tradicion",activo=True).first(),"nav_active":"inicio"})
+    return render(request,"core/app_inicio.html" if getattr(request,"app_mode",False) else "core/index.html",{"destacados":Producto.objects.filter(activo=True,destacado=True).select_related("categoria"),"promociones":Promocion.objects.vigentes(),"nav_active":"inicio"})
 def nosotros(request):
     return render(request,"core/nosotros.html",{"nav_active":"nosotros"})
 def contacto(request):

@@ -23,7 +23,7 @@ def checkout(request):
     if not cart["items"]:
         messages.info(request,"Agrega productos antes de continuar.");return redirect("carrito:detalle")
     initial={"clave":request.session.setdefault("checkout_key",str(uuid.uuid4())),"resumen":make_quote(request.user,cart)}
-    form=CheckoutForm(request.POST or None,user=request.user,openpay=configured("openpay"),mercadopago=configured("mercadopago"),initial=initial)
+    form=CheckoutForm(request.POST or None,user=request.user,mercadopago=configured("mercadopago"),initial=initial)
     if request.method=="POST" and form.is_valid():
         try: order=create_order(request.user,request.session,form.cleaned_data["direccion"].pk,form.cleaned_data["proveedor"],form.cleaned_data["clave"],form.cleaned_data["resumen"])
         except ValidationError as error: form.add_error(None,error)
@@ -31,7 +31,7 @@ def checkout(request):
             request.session[KEY]={};request.session.pop("checkout_key",None)
             messages.success(request,"Pedido creado. El pago se confirma únicamente al verificar la pasarela.")
             return redirect("pedidos:detalle",numero=order.numero)
-    return render(request,"pedidos/checkout.html",{"form":form,"cart":cart,"mp_enabled":configured("mercadopago"),"openpay_enabled":configured("openpay"),"pagos_habilitados":configured("mercadopago") or configured("openpay")})
+    return render(request,"pedidos/checkout.html",{"form":form,"cart":cart,"mp_enabled":configured("mercadopago"),"pagos_habilitados":configured("mercadopago")})
 @login_required
 def history(request):
     return render(request,"pedidos/mis_pedidos.html",{"pedidos":request.user.pedidos.prefetch_related("items")})

@@ -51,3 +51,40 @@ class Producto(TimeStamped):
         return reverse("catalogo:detalle",kwargs={"slug":self.slug})
     def __str__(self):
         return self.nombre
+
+    @property
+    def descripcion_imagen(self):
+        if not self.imagen and self.galeria_descriptiva and self.galeria_descriptiva[0]["src"] == self.foto:
+            return self.galeria_descriptiva[0]["alt"]
+        brand = "" if "carranco" in self.nombre.lower() else " Carranco"
+        return f"{self.nombre}{brand} · {self.presentacion}".strip(" ·")
+
+    @property
+    def galeria_descriptiva(self):
+        from apps.core.templatetags.storefront import storefront_text
+        result = []
+        for photo in self.galeria if isinstance(self.galeria, list) else []:
+            if not isinstance(photo, dict) or not photo.get("src"): continue
+            item = dict(photo)
+            alt = str(item.get("alt") or "").strip()
+            src = item["src"].lower()
+            generic = not alt or any(phrase in alt.lower() for phrase in ("ilustrativ", "imagen de producto", "imagen del producto", "fotografía del producto"))
+            if generic:
+                if "images.unsplash.com" in src:
+                    alt = "Tabla de quesos con pan y acompañamientos para compartir"
+                elif "ranchero-300" in src:
+                    alt = "Queso Ranchero Carranco de 300 g"
+                elif "sin-sal_90g" in src:
+                    alt = "Mantequilla sin sal Carranco de 90 g"
+                else:
+                    brand = "" if "carranco" in self.nombre.lower() else " Carranco"
+                    alt = f"{self.nombre}{brand} · {self.presentacion}".strip(" ·")
+            if "sin-sal_200g" in src:
+                alt = "Mantequilla sin sal Carranco de 200 g"
+            caption = str(item.get("caption") or "").strip()
+            if not caption or any(word in caption.lower() for word in ("ilustrativ", "fotografía del fabricante", "fotografía puede mostrar", "envase alternativo", "otro envase", "imagen del producto")):
+                caption = alt
+            item["alt"] = storefront_text(alt)
+            item["caption"] = storefront_text(caption)
+            result.append(item)
+        return result

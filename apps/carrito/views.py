@@ -4,13 +4,22 @@ from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.views.decorators.http import require_POST
-from .services import summarize,change,items,KEY,MAX_QUANTITY
+from .services import summarize,change,items,KEY,MAX_QUANTITY,reconcile
 from apps.catalogo.models import Producto
 
 def detail(request):
-    return render(request,"carrito/carrito.html",{"cart":summarize(request.session)})
+    return render(request,"carrito/carrito.html",{"cart":reconcile(request.session)})
+def state(request):
+    return JsonResponse(payload(reconcile(request.session)))
+
 def payload(cart):
-    return {"ok":True,"count":cart["count"],"subtotal":str(cart["subtotal"]),"total":str(cart["total"])}
+    return {
+        "ok": True, "count": cart["count"], "subtotal": str(cart["subtotal"]),
+        "envio": str(cart["envio"]), "total": str(cart["total"]), "valido": cart["valido"],
+        "warnings": cart.get("warnings", []),
+        "items": [{"id": line["producto"].pk, "cantidad": line["cantidad"],
+                   "maximo": line["maximo"], "subtotal": str(line["subtotal"])} for line in cart["items"]],
+    }
 @require_POST
 def mutate(request):
     ajax=request.content_type=="application/json"
@@ -30,11 +39,11 @@ def mutate(request):
             product_id=int(data.get("producto"))
             if product_id<=0: raise ValueError()
             cart=change(request.session,product_id,quantity,operation)
-        if ajax: return JsonResponse(payload(cart))
+        if ajax: return JsonResponse(payload(reconcile(request.session)))
         messages.success(request,"Carrito actualizado.")
     except (ValidationError,ValueError,TypeError,json.JSONDecodeError) as error:
         message=" ".join(error.messages) if isinstance(error,ValidationError) else "Solicitud de carrito no válida."
-        if ajax: return JsonResponse({"ok":False,"message":message},status=400)
+        if ajax: return JsonResponse({**payload(reconcile(request.session)),"ok":False,"message":message},status=400)
         messages.error(request,message)
     return redirect("carrito:detalle")
 @require_POST

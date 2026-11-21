@@ -29,7 +29,7 @@ def create_order(user,session,address_id,provider,key,quote):
         return previous
     address=Direccion.objects.filter(pk=address_id,usuario=user).first()
     if address is None: raise ValidationError("Selecciona una dirección de tu cuenta.")
-    if provider not in {"mercadopago","openpay"}: raise ValidationError("Método de pago no válido.")
+    if provider != "mercadopago": raise ValidationError("Método de pago no válido.")
     raw=items(session)
     products=list(Producto.objects.select_for_update().filter(pk__in=raw).order_by("pk"))
     cart=summarize(session)

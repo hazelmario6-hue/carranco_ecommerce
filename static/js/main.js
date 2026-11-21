@@ -18,8 +18,6 @@
     document.addEventListener("click",event=>{
         const control=event.target.closest("button,a");if(!control)return;
         if("closeDialog" in control.dataset){control.closest("dialog")?.close();return;}
-        if("whatsapp" in control.dataset){showInfo("Asistente Carranco","El asistente aún no está conectado a WhatsApp. Puedes dejar tu consulta en la página de Contacto; esta ventana no envía mensajes.");return;}
-        if("social" in control.dataset){showInfo(control.dataset.social+"","Este perfil aún no está conectado.");return;}
         if("help" in control.dataset&&help[control.dataset.help])showInfo(...help[control.dataset.help]);
     });
     document.querySelectorAll("dialog").forEach(dialog=>{
