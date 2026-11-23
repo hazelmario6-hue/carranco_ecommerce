@@ -1,3 +1,5 @@
+> Parche de cupones 22 de noviembre de 2026: consulta [GUIA_CUPONES_2026-11-22.md](GUIA_CUPONES_2026-11-22.md). Incluye vigencia, límites globales y por cliente, dashboard y total descontado en Mercado Pago.
+
 > Actualización 20 de noviembre de 2026: empieza por [GUIA_ACTUALIZACION.md](GUIA_ACTUALIZACION.md). Solo Mercado Pago; promociones administrables y modo app aislado.
 
 > Actualización de pagos: consulta [README_PRECIO_COMPLETO_2026-11-11.md](README_PRECIO_COMPLETO_2026-11-11.md). Los pedidos nuevos cobran el precio de catálogo más envío; las explicaciones antiguas sobre importes reducidos y el límite de $100 MXN ya no aplican.

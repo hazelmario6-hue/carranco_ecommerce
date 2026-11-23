@@ -98,3 +98,6 @@ input,select,textarea{max-width:100%}
 .cart-item .image-unavailable{width:68px;height:68px;min-height:0;padding:4px;font-size:9px;line-height:1.3;overflow-wrap:anywhere;overflow:hidden}
 @media(max-width:600px){.cart-item .image-unavailable{width:56px;height:56px}}
 .app-mode .cart-item .image-unavailable{width:56px;height:56px}
+
+.coupon-box{margin:24px 0;padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--cream)}
+.coupon-box h3{margin:0 0 10px;font-size:1.25rem}.coupon-box p{margin:0 0 12px}.coupon-form label{display:block;margin-bottom:6px;font-size:.8rem;font-weight:600}.coupon-form>div{display:flex;gap:8px}.coupon-form input{min-width:0;width:100%;min-height:46px;padding:10px 12px;border:1px solid #a9a290;border-radius:6px;text-transform:uppercase}.coupon-form .button{flex:0 0 auto}.coupon-saving{color:#28623d;font-weight:700}.app-mode .coupon-box{padding:14px}.app-mode .coupon-form>div{align-items:stretch}.app-mode .coupon-form .button{padding-inline:12px}

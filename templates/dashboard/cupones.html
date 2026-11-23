@@ -1,0 +1,11 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Cupones | Administración Carranco{% endblock %}
+{% block dashboard_content %}
+<h1 class="commerce-title">Cupones</h1>
+<p>Controla la vigencia, compra mínima, usos totales y usos permitidos por cliente.</p>
+{% if perms.pedidos.add_cupon %}<p><a class="button button-navy" href="{% url 'dashboard:cupon_nuevo' %}">Nuevo cupón</a></p>{% endif %}
+<div class="form-card table-scroll"><table><thead><tr><th>Código</th><th>Descuento</th><th>Vigencia</th><th>Usos</th><th>Por cliente</th><th>Estado</th></tr></thead><tbody>
+{% for cupon in cupones %}<tr><td>{% if perms.pedidos.change_cupon %}<a class="text-link" href="{% url 'dashboard:cupon_editar' cupon.pk %}">{{ cupon.codigo }}</a>{% else %}{{ cupon.codigo }}{% endif %}</td><td>{% if cupon.tipo == 'porcentaje' %}{{ cupon.valor|floatformat:2 }}%{% else %}${{ cupon.valor|floatformat:2 }} MXN{% endif %}<small>Mínimo ${{ cupon.compra_minima|floatformat:2 }}</small></td><td>{{ cupon.inicio|date:"d/m/Y H:i"|default:"Inmediata" }}<small>hasta {{ cupon.fin|date:"d/m/Y H:i"|default:"sin vencimiento" }}</small></td><td>{{ cupon.usos_vigentes }} / {{ cupon.max_usos|default:"∞" }}</td><td>{{ cupon.max_usos_cliente }}</td><td>{{ cupon.estado_publicacion }}</td></tr>
+{% empty %}<tr><td colspan="6">Todavía no hay cupones.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

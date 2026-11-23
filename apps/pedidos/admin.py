@@ -1,7 +1,18 @@
 from django.contrib import admin
 from apps.core.admin import ReadOnlyAdmin
 from apps.core.templatetags.storefront import storefront_text
-from .models import Pedido,PedidoItem,HistorialPedido,MovimientoInventario
+from .models import Pedido,PedidoItem,HistorialPedido,MovimientoInventario,Cupon,UsoCupon
+from apps.dashboard.forms import CuponForm
+@admin.register(Cupon)
+class CuponAdmin(admin.ModelAdmin):
+    form=CuponForm
+    list_display=["codigo","tipo","valor","compra_minima","estado_publicacion","max_usos","max_usos_cliente"]
+    list_filter=["activo","tipo"]
+    search_fields=["codigo"]
+@admin.register(UsoCupon)
+class UsoCuponAdmin(ReadOnlyAdmin):
+    list_display=["cupon","usuario","pedido","descuento","created_at"]
+    list_filter=["cupon"]
 @admin.register(Pedido)
 class PedidoAdmin(ReadOnlyAdmin):
     list_display=["numero","usuario","estado","estado_pago","total_cobrado","created_at"]

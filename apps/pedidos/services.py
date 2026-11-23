@@ -12,11 +12,14 @@ from apps.cuentas.verificacion import is_verified
 from apps.carrito.services import summarize,items
 from apps.core.models import Auditoria
 from .models import Pedido,PedidoItem,MovimientoInventario,HistorialPedido
+from .models import UsoCupon
+from .cupones import SESSION_KEY,price_with_coupon
 
-def fingerprint(cart):
-    return {"items":[[line["producto"].pk,line["cantidad"],str(line["producto"].precio_catalogo)] for line in cart["items"]],"total":str(cart["total"]),"shipping":str(cart["envio"])}
-def make_quote(user,cart):
-    return signing.dumps({"user":user.pk,**fingerprint(cart)},salt="carranco.checkout")
+def fingerprint(cart,pricing=None):
+    pricing=pricing or {"codigo":"","descuento":Decimal("0.00"),"total":cart["total"]}
+    return {"items":[[line["producto"].pk,line["cantidad"],str(line["producto"].precio_catalogo)] for line in cart["items"]],"total":str(pricing["total"]),"shipping":str(cart["envio"]),"coupon":pricing["codigo"],"discount":str(pricing["descuento"])}
+def make_quote(user,cart,pricing=None):
+    return signing.dumps({"user":user.pk,**fingerprint(cart,pricing)},salt="carranco.checkout")
 @transaction.atomic
 def create_order(user,session,address_id,provider,key,quote):
     get_user_model().objects.select_for_update().get(pk=user.pk)
@@ -34,19 +37,23 @@ def create_order(user,session,address_id,provider,key,quote):
     products=list(Producto.objects.select_for_update().filter(pk__in=raw).order_by("pk"))
     cart=summarize(session)
     if not cart["valido"]: raise ValidationError("Revisa tu carrito: algún producto está agotado, inactivo o supera el stock.")
+    pricing=price_with_coupon(user,cart,session.get(SESSION_KEY,""),lock=True)
     try: quoted=signing.loads(quote,salt="carranco.checkout",max_age=900)
     except signing.BadSignature: raise ValidationError("El resumen venció. Actualiza el checkout y acepta el importe actual.")
-    if quoted!={"user":user.pk,**fingerprint(cart)}: raise ValidationError("Cambió tu selección o su precio. Revisa y acepta el nuevo resumen.")
-    amount=cart["total"].quantize(Decimal("0.01"))
+    if quoted!={"user":user.pk,**fingerprint(cart,pricing)}: raise ValidationError("Cambió tu selección, cupón o precio. Revisa y acepta el nuevo resumen.")
+    amount=pricing["total"].quantize(Decimal("0.01"))
     if amount<=0: raise ValidationError("El total del pedido debe ser mayor que cero.")
     snapshot={field:getattr(address,field) for field in ["calle","numero_exterior","numero_interior","colonia","codigo_postal","ciudad","estado","referencias"]}
-    order=Pedido.objects.create(usuario=user,correo_cliente=user.email,direccion=address,direccion_snapshot=snapshot,clave_idempotencia=key,subtotal_catalogo=cart["subtotal"],envio=cart["envio"],total_catalogo=cart["total"],total_academico=amount,metodo_pago=provider,reserva_expira_at=timezone.now()+timedelta(minutes=settings.RESERVATION_MINUTES),aviso_academico_aceptado_at=timezone.now())
+    order=Pedido.objects.create(usuario=user,correo_cliente=user.email,direccion=address,direccion_snapshot=snapshot,clave_idempotencia=key,subtotal_catalogo=cart["subtotal"],envio=cart["envio"],descuento=pricing["descuento"],cupon=pricing["cupon"],codigo_cupon=pricing["codigo"],total_catalogo=amount,total_academico=amount,metodo_pago=provider,reserva_expira_at=timezone.now()+timedelta(minutes=settings.RESERVATION_MINUTES),aviso_academico_aceptado_at=timezone.now())
+    if pricing["cupon"]:
+        UsoCupon.objects.create(cupon=pricing["cupon"],usuario=user,pedido=order,descuento=pricing["descuento"])
     for product in products:
         qty=raw[str(product.pk)]
         if not product.activo or product.stock_disponible<qty: raise ValidationError("Las existencias cambiaron. Revisa tu selección.")
         product.stock_reservado+=qty;product.save(update_fields=["stock_reservado","updated_at"])
         PedidoItem.objects.create(pedido=order,producto=product,sku=product.sku,nombre_producto=product.nombre,presentacion=product.presentacion,precio_unitario=product.precio_catalogo,precio_academico_unitario=product.precio_catalogo,cantidad=qty,subtotal=product.precio_catalogo*qty)
-    HistorialPedido.objects.create(pedido=order,estado_anterior="",estado_nuevo="pendiente_pago",usuario=user,comentario="Pedido creado; total a pagar aceptado.")
+    coupon_note=f" Cupón {pricing['codigo']} aplicado por ${pricing['descuento']:.2f}." if pricing["cupon"] else ""
+    HistorialPedido.objects.create(pedido=order,estado_anterior="",estado_nuevo="pendiente_pago",usuario=user,comentario="Pedido creado; total a pagar aceptado."+coupon_note)
     return order
 
 def release_locked(order,comment,user=None):
@@ -56,6 +63,7 @@ def release_locked(order,comment,user=None):
         for product in Producto.objects.select_for_update().filter(pk__in=quantities).order_by("pk"):
             if product.stock_reservado<quantities[product.pk]: raise ValidationError("La reserva requiere revisión administrativa.")
             product.stock_reservado-=quantities[product.pk];product.save(update_fields=["stock_reservado","updated_at"])
+    UsoCupon.objects.filter(pedido=order).delete()
     before=order.estado;order.reserva_activa=False;order.estado="cancelado";order.save()
     HistorialPedido.objects.create(pedido=order,estado_anterior=before,estado_nuevo="cancelado",comentario=comment,usuario=user)
 @transaction.atomic

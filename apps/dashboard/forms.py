@@ -1,6 +1,7 @@
 from django import forms
 from django.utils.text import slugify
 from apps.catalogo.models import Producto
+from apps.pedidos.models import Cupon
 from apps.core.templatetags.storefront import storefront_text
 
 class StorefrontCopyMixin:
@@ -83,3 +84,22 @@ class PromocionForm(forms.ModelForm):
             "fin": forms.DateTimeInput(format="%Y-%m-%dT%H:%M", attrs={"type": "datetime-local"}),
         }
         help_texts = {"inicio": "Hora de Ciudad de México. Vacío: disponible desde ahora.", "fin": "Hora de Ciudad de México. Vacío: sin fecha de término."}
+
+class CuponForm(forms.ModelForm):
+    class Meta:
+        model=Cupon
+        fields=["codigo","tipo","valor","compra_minima","inicio","fin","max_usos","max_usos_cliente","activo"]
+        widgets={
+            "inicio":forms.DateTimeInput(format="%Y-%m-%dT%H:%M",attrs={"type":"datetime-local"}),
+            "fin":forms.DateTimeInput(format="%Y-%m-%dT%H:%M",attrs={"type":"datetime-local"}),
+        }
+        help_texts={
+            "codigo":"Letras, números, guion o guion bajo. Se guardará en mayúsculas.",
+            "valor":"Porcentaje (hasta 100) o importe en MXN según el tipo.",
+            "compra_minima":"Subtotal mínimo de productos; el envío no cuenta.",
+            "max_usos":"Vacío significa sin límite global.",
+            "max_usos_cliente":"Recomendado: 1 uso por cuenta.",
+            "inicio":"Hora de Ciudad de México. Vacío: disponible ahora.",
+            "fin":"Hora de Ciudad de México. Vacío: sin vencimiento.",
+        }
+    def clean_codigo(self): return self.cleaned_data["codigo"].strip().upper()

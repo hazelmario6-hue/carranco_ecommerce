@@ -1,0 +1,7 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{% if cupon %}Editar{% else %}Nuevo{% endif %} cupón | Carranco{% endblock %}
+{% block dashboard_content %}
+<h1 class="commerce-title">{% if cupon %}Editar {{ cupon.codigo }}{% else %}Nuevo cupón{% endif %}</h1>
+<p>El descuento se aplica al subtotal de productos. El envío conserva sus reglas actuales y el servidor verifica nuevamente el código antes de crear el pedido.</p>
+<div class="form-card"><form method="post">{% csrf_token %}{% include "includes/form.html" %}<button class="button button-navy" type="submit">Guardar cupón</button> <a class="back-link" href="{% url 'dashboard:cupones' %}">Volver</a></form></div>
+{% endblock %}

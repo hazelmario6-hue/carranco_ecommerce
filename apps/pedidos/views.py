@@ -12,6 +12,7 @@ from .recibos import receipt_context
 from .models import Pedido
 from .forms import CheckoutForm
 from .services import create_order,make_quote,cancel_pending
+from .cupones import SESSION_KEY,normalize,price_with_coupon
 from apps.carrito.services import summarize,KEY
 from apps.pagos.services.gateway import configured
 @login_required
@@ -22,16 +23,43 @@ def checkout(request):
     cart=summarize(request.session)
     if not cart["items"]:
         messages.info(request,"Agrega productos antes de continuar.");return redirect("carrito:detalle")
-    initial={"clave":request.session.setdefault("checkout_key",str(uuid.uuid4())),"resumen":make_quote(request.user,cart)}
+    try:
+        pricing=price_with_coupon(request.user,cart,request.session.get(SESSION_KEY,""))
+    except ValidationError as error:
+        request.session.pop(SESSION_KEY,None)
+        pricing=price_with_coupon(request.user,cart)
+        messages.error(request," ".join(error.messages))
+    initial={"clave":request.session.setdefault("checkout_key",str(uuid.uuid4())),"resumen":make_quote(request.user,cart,pricing)}
     form=CheckoutForm(request.POST or None,user=request.user,mercadopago=configured("mercadopago"),initial=initial)
     if request.method=="POST" and form.is_valid():
         try: order=create_order(request.user,request.session,form.cleaned_data["direccion"].pk,form.cleaned_data["proveedor"],form.cleaned_data["clave"],form.cleaned_data["resumen"])
         except ValidationError as error: form.add_error(None,error)
         else:
-            request.session[KEY]={};request.session.pop("checkout_key",None)
+            request.session[KEY]={};request.session.pop("checkout_key",None);request.session.pop(SESSION_KEY,None)
             messages.success(request,"Pedido creado. El pago se confirma únicamente al verificar la pasarela.")
             return redirect("pedidos:detalle",numero=order.numero)
-    return render(request,"pedidos/checkout.html",{"form":form,"cart":cart,"mp_enabled":configured("mercadopago"),"pagos_habilitados":configured("mercadopago")})
+    return render(request,"pedidos/checkout.html",{"form":form,"cart":cart,"pricing":pricing,"mp_enabled":configured("mercadopago"),"pagos_habilitados":configured("mercadopago")})
+
+@login_required
+@require_POST
+def coupon(request):
+    cart=summarize(request.session)
+    if not cart["items"]:
+        messages.info(request,"Agrega productos antes de aplicar un cupón.")
+        return redirect("carrito:detalle")
+    if request.POST.get("accion")=="quitar":
+        request.session.pop(SESSION_KEY,None)
+        messages.success(request,"Cupón retirado del pedido.")
+        return redirect("pedidos:checkout")
+    code=normalize(request.POST.get("codigo"))
+    try: pricing=price_with_coupon(request.user,cart,code)
+    except ValidationError as error:
+        request.session.pop(SESSION_KEY,None)
+        messages.error(request," ".join(error.messages))
+    else:
+        request.session[SESSION_KEY]=pricing["codigo"]
+        messages.success(request,f"Cupón {pricing['codigo']} aplicado: ahorras ${pricing['descuento']:.2f} MXN.")
+    return redirect("pedidos:checkout")
 @login_required
 def history(request):
     return render(request,"pedidos/mis_pedidos.html",{"pedidos":request.user.pedidos.prefetch_related("items")})

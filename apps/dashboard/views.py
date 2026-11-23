@@ -14,10 +14,10 @@ from django.urls import reverse
 from django.contrib import messages
 from django.conf import settings
 from apps.catalogo.models import Producto
-from apps.pedidos.models import Pedido,PedidoItem
+from apps.pedidos.models import Pedido,PedidoItem,Cupon
 from apps.pedidos.services import adjust_stock,transition
 from apps.core.models import Auditoria
-from .forms import ProductoForm,AjusteForm,EstadoForm
+from .forms import ProductoForm,AjusteForm,EstadoForm,CuponForm
 
 def staff_required(permission=None):
     def decorate(view):
@@ -132,3 +132,20 @@ def promotion_edit(request, pk=None):
         messages.success(request, "Promoción guardada. Su vigencia se aplica en web y app.")
         return redirect("dashboard:promociones")
     return render(request, "dashboard/promocion_form.html", {"form": form, "promocion": promotion})
+
+@staff_required("pedidos.view_cupon")
+def coupons(request):
+    return render(request,"dashboard/cupones.html",{"cupones":Cupon.objects.all()})
+
+@staff_required()
+def coupon_edit(request,pk=None):
+    permission="pedidos.change_cupon" if pk else "pedidos.add_cupon"
+    if not request.user.has_perm(permission):raise PermissionDenied
+    coupon=get_object_or_404(Cupon,pk=pk) if pk else None
+    form=CuponForm(request.POST if request.method=="POST" else None,instance=coupon)
+    if request.method=="POST" and form.is_valid():
+        with transaction.atomic():
+            saved=form.save();Auditoria.objects.create(usuario=request.user,evento="editar_cupon" if pk else "crear_cupon",objeto=str(saved.pk))
+        messages.success(request,"Cupón guardado. El checkout comprobará sus fechas y límites antes de cobrar.")
+        return redirect("dashboard:cupones")
+    return render(request,"dashboard/cupon_form.html",{"form":form,"cupon":coupon})
